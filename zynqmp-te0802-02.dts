@@ -1,0 +1,286 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * dts file for Xilinx ZynqMP ZCU102 RevA
+ *
+ * (C) Copyright 2015 - 2021, Xilinx, Inc.
+ *
+ * Michal Simek <michal.simek@xilinx.com>
+ */
+
+/dts-v1/;
+
+#include "zynqmp.dtsi"
+#include "zynqmp-clk-ccf.dtsi"
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/pinctrl-zynqmp.h>
+#include <dt-bindings/phy/phy.h>
+
+/ {
+	model = "ZynqMP TE0802-02";
+	compatible = "xlnx,zynqmp-te0802-02", "xlnx,zynqmp-te0802", "xlnx,zynqmp";
+
+	aliases {
+		ethernet0 = &gem3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		serial0 = &uart0;
+		spi0 = &qspi;
+	};
+
+	chosen {
+		bootargs = "earlycon clk_ignore_unused";
+		stdout-path = "serial0:115200n8";
+		xlnx,eeprom = &eeprom;
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x3ff00000>;
+	};
+	
+	refclk2:psgtr_dp_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <27000000>;
+	};
+
+	refclk1:psgtr_usb_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <26000000>;
+   };
+
+   refclk0:psgtr_pcie_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <100000000>;
+   };
+
+	cpus {
+	     /delete-node/ cpu@2;
+	     /delete-node/ cpu@3;
+	};
+};
+
+&fpd_dma_chan1 {
+	status = "okay";
+};
+
+&fpd_dma_chan2 {
+	status = "okay";
+};
+
+&fpd_dma_chan3 {
+	status = "okay";
+};
+
+&fpd_dma_chan4 {
+	status = "okay";
+};
+
+&fpd_dma_chan5 {
+	status = "okay";
+};
+
+&fpd_dma_chan6 {
+	status = "okay";
+};
+
+&fpd_dma_chan7 {
+	status = "okay";
+};
+
+&fpd_dma_chan8 {
+	status = "okay";
+};
+
+&gem3 {
+	status = "okay";
+	phy-mode = "rgmii-id";
+	nvmem-cells = <&eth0_addr>;
+	nvmem-cell-names = "mac-address";
+};
+
+&gpio {
+	status = "okay";
+	emio-gpio-width = <0x20>;
+	gpio-mask-high = <0x00>;
+	gpio-mask-low = <0x5600>;
+
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	eeprom: eeprom@50 {
+		compatible = "microchip,24aa025", "atmel,24c02";
+		reg = <0x50>;
+
+		#address-cells = <1>;
+		#size-cells = <1>;
+		eth0_addr: eth-mac-addr@FA {
+			reg = <0xFA 0x06>;
+		};
+	};
+};
+
+&pinctrl0 {
+	status = "okay";
+	pinctrl_uart0_default: uart0-default {
+		mux {
+			groups = "uart0_2_grp";
+			function = "uart0";
+		};
+
+		conf {
+			groups = "uart0_2_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+
+		conf-rx {
+			pins = "MIO11";
+			bias-high-impedance;
+		};
+
+		conf-tx {
+			pins = "MIO10";
+			bias-disable;
+		};
+	};
+
+	pinctrl_sdhci0_default: sdhci0-default {
+		mux {
+			groups = "sdio0_0_grp";
+			function = "sdio0";
+		};
+
+		conf {
+			groups = "sdio0_0_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+			bias-disable;
+		};
+
+		mux-cd {
+			groups = "sdio0_cd_0_grp";
+			function = "sdio0_cd";
+		};
+
+		conf-cd {
+			groups = "sdio0_cd_0_grp";
+			bias-high-impedance;
+			bias-pull-up;
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+	};
+};
+
+&pcie {
+	status = "okay";
+	xlnx,tz-nonsecure = <0x00>;
+};
+
+&psgtr {
+	status = "okay";
+	clocks = <&refclk0 &refclk1 &refclk2>;
+	clock-names = "ref0\0ref1\0ref2";
+};
+
+&qspi {
+	status = "okay";
+	is-dual = <0>;
+	spi-tx-bus-width = <4>;
+	spi-rx-bus-width = <4>;
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0x0>;
+		partition@0 {
+			label = "boot";
+		    	reg = <0x00 0xa00000>;
+		};
+		partition@1 {
+			label = "bootenv";
+			reg = <0xa00000 0x40000>;
+		};
+		partition@2 {
+			label = "kernel";
+			reg = <0xa40000 0x1500000>;
+		};
+		partition@3 {
+			label = "bootscr";
+			reg = <0x1f40000 0x40000>;
+		};
+	};
+};
+
+&rtc {
+	status = "okay";
+};
+
+&sdhci0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sdhci0_default>;
+	clock-frequency = <187500000>;
+	xlnx,mio-bank = <0>;
+	no-1-8-v;
+	disable-wp;
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart0_default>;
+};
+
+&usb0 {
+	status = "okay";
+	xlnx,tz-nonsecure = <0x01>;
+	xlnx,usb-polarity = <0x00>;
+	xlnx,usb-reset-mode = <0x00>;
+};
+
+&dwc3_0 {
+	status = "okay";
+	dr_mode = "host";
+	snps,usb3_lpm_capable;
+	maximum-speed = "super-speed";
+};
+
+&watchdog0 {
+	status = "okay";
+};
+
+&xilinx_ams {
+	status = "okay";
+};
+
+&ams_ps {
+	status = "okay";
+};
+
+&ams_pl {
+	status = "okay";
+};
+
+&zynqmp_dpdma {
+	status = "okay";
+};
+
+&zynqmp_dpsub {
+	status = "okay";
+	phy-names = "dp-phy0", "dp-phy1";
+	phys = <&psgtr 3 PHY_TYPE_DP 0 2>,
+	       <&psgtr 2 PHY_TYPE_DP 1 2>;
+};

@@ -106,8 +106,8 @@ CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 make xilinx_zynqmp_virt_defconfig
 
 Add following to the U-Boot build configuration,
 
-PMU firmware path. ARM architecture > PMU firmware (`PMUFW_INIT_FILE`).
-PM configuration object path. ARM architecture > PMU firmware configuration object to load at runtime by SPL (`ZYNQMP_SPL_PM_CFG_OBJ_FILE`)
+ * PMU firmware path. ARM architecture > PMU firmware (`PMUFW_INIT_FILE`).
+ * PM configuration object path. ARM architecture > PMU firmware configuration object to load at runtime by SPL (`ZYNQMP_SPL_PM_CFG_OBJ_FILE`)
 
 Change the default device tree to `<my_board>` in Device Tree Control > Default Device Tree for DT control (`DEFAULT_DEVICE_TREE`).
 

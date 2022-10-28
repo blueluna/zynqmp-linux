@@ -1,0 +1,20 @@
+--- a/psu_init_gpl.c	2022-10-28 07:42:50.441878998 +0200
++++ b/psu_init_gpl.c	2022-10-28 07:42:40.562022663 +0200
+@@ -35,7 +35,7 @@
+ 
+ static u32 mask_read(u32 add, u32 mask);
+ 
+-static int serdes_rst_seq (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
++static int serdes_rst_seq (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
+ 
+ static int serdes_bist_static_settings(u32 lane_active); 
+ 
+@@ -43,7 +43,7 @@
+ 
+ static int serdes_bist_result(u32 lane_active);
+ 
+-static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib);
++static int serdes_illcalib_pcie_gen1 (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib);
+ 
+ static int serdes_illcalib (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
+ 

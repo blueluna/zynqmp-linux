@@ -1,3 +1,12 @@
-embeddedsw/
-u-boot/
+embeddedsw-xilinx*/
+embeddedsw-xilinx*.tar.gz
+u-boot-*/
 u-boot-*.tar.bz2
+arm-trusted-firmware-xilinx-*/
+arm-trusted-firmware-xilinx-*.tar.gz
+pmufw-*bin
+xsa/
+pm_cfg_obj.o
+pmu_obj.bin
+gcc-arm-*-x86_64-aarch64-none-elf/
+gcc-arm-*-x86_64-aarch64-none-elf.tar.xz
