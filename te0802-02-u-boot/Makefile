@@ -43,7 +43,7 @@ device_tree_source=$(board_name).dts
 dts_source=$(abspath ../$(device_tree_source))
 dts_destination=$(u_boot_dir)/arch/arm/dts/$(device_tree_source)
 
-hardware_definition=test_board_2cg_i1gb.xsa
+hardware_definition=top_wrapper.xsa
 xsa_source=$(abspath ../$(hardware_definition))
 xsa_dir=xsa
 psu_init_file=psu_init_gpl

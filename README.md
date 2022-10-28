@@ -1,6 +1,6 @@
 # Boot TE0802-02
 
-Booting Trenz Electronix TE0802-02 with as few Xilinx tools possible.
+Booting Trenz Electronic TE0802-02 with as few Xilinx tools possible.
 
 ## U-Boot
 

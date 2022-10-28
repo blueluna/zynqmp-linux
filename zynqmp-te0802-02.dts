@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * dts file for Xilinx ZynqMP ZCU102 RevA
+ * dts file for Trenz Electronic TE0802-02
  *
- * (C) Copyright 2015 - 2021, Xilinx, Inc.
- *
- * Michal Simek <michal.simek@xilinx.com>
+ * Erik Banvik <erik.public@gmail.com>
  */
 
 /dts-v1/;
