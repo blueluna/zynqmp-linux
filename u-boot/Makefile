@@ -1,4 +1,7 @@
-# Hi
+# SPDX-License-Identifier: MIT
+# Bootloader for TE0802-02
+#
+# Author: Erik Banvik <erik.public@gmail.com>
 
 xilinx_version=v2022.1
 
@@ -55,7 +58,8 @@ u_boot_board_dir=$(u_boot_dir)/board/xilinx/zynqmp/$(board_name)
 
 u_boot_current_config=$(u_boot_dir)/.config
 
-make_jobs=$(shell nproc)
+num_processors=$(shell nproc)
+num_jobs=$(shell expr $(num_processors) - 2)
 
 all: $(u_boot_built)
 
@@ -137,7 +141,7 @@ $(u_boot_current_config): $(u_boot_patched)
 	CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
 
 $(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config)
-	BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j $(make_jobs)
+	BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
 	touch $@
 
 clean:
