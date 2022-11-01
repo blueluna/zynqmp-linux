@@ -2,6 +2,18 @@
 
 Booting Trenz Electronic TE0802-02 with as few Xilinx tools possible.
 
+### Required packages,
+
+Following packages might be required to be installed,
+
+ * `bison`
+ * `dtc`
+ * `flex`
+ * `git-lfs`
+ * `gnutls-dev` / `gnutls-devel`
+ * `openssl-dev` / `openssl-devel`
+ * `uuid-dev` / `libuuid-devel`
+
 ## U-Boot
 
 Reference: https://lucaceresoli.net/zynqmp-uboot-spl-pmufw-cfg-load/

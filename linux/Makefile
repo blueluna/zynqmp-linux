@@ -36,6 +36,10 @@ all: $(linux_modules_installed) $(linux_headers_installed)
 
 .PHONY: clean
 
+include ../toolchain.makefile
+
+CROSS_COMPILE=$(aarch64_linux_cross)
+
 $(dts_destination): $(linux_unpacked) $(dts_source)
 	cp $(dts_source) $(dts_destination)
 	$(shell echo 'dtb-$$(CONFIG_ARCH_ZYNQMP) += $(device_tree_binary)' >> $(dts_makefile))
@@ -55,23 +59,23 @@ $(linux_headers_dir):
 	mkdir -p $@
 	touch $@
 
-$(linux_configured): $(dts_destination)
+$(linux_configured): $(dts_destination) $(aarch64_linux_marker)
 	cp te0802_02_defconfig $(linux_dir)/arch/arm64/configs/
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -C $(linux_dir) te0802_02_defconfig ARCH=arm64
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -C $(linux_dir) oldconfig ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(linux_dir) te0802_02_defconfig ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(linux_dir) oldconfig ARCH=arm64
 	touch $@
 
-$(linux_built): $(linux_configured)
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -j$(num_jobs) -C $(linux_dir) ARCH=arm64
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -j$(num_jobs) -C $(linux_dir) modules ARCH=arm64
+$(linux_built): $(linux_configured) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) modules ARCH=arm64
 	touch $@
 
-$(linux_modules_installed): $(linux_built)
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -j$(num_jobs) -C $(linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(linux_modules_dir))
+$(linux_modules_installed): $(linux_built) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(linux_modules_dir))
 	touch $@
 
-$(linux_headers_installed): $(linux_built)
-	CROSS_COMPILE=aarch64-linux-gnu- $(MAKE) -j$(num_jobs) -C $(linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(linux_headers_dir))
+$(linux_headers_installed): $(linux_built) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(linux_headers_dir))
 	touch $@
 
 clean:

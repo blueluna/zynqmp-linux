@@ -10,14 +10,6 @@ embeddedsw_url=https://github.com/Xilinx/embeddedsw/archive/refs/tags/xilinx_$(x
 embeddedsw_archive=$(embeddedsw_dir).tar.gz
 embeddedsw_sources=$(embeddedsw_dir)/.sources
 
-arm_toolchain_triplet=aarch64-none-elf
-arm_toolchain_version=11.2-2022.02
-arm_toolchain_dir=gcc-arm-$(arm_toolchain_version)-x86_64-$(arm_toolchain_triplet)
-arm_toolchain_archive=$(arm_toolchain_dir).tar.xz
-arm_toolchain_url=https://developer.arm.com/-/media/Files/downloads/gnu/$(arm_toolchain_version)/binrel/$(arm_toolchain_archive)
-arm_toolchain_bin=$(arm_toolchain_dir)/bin
-arm_toolchain_gcc=$(arm_toolchain_bin)/$(arm_toolchain_triplet)-gcc
-
 pmufw=pmufw-v2022.1.bin
 pmufw_url=https://github.com/lucaceresoli/zynqmp-pmufw-binaries/raw/master/bin/$(pmufw)
 
@@ -65,6 +57,8 @@ all: $(u_boot_built)
 
 .PHONY: clean
 
+include ../toolchain.makefile
+
 $(embeddedsw_archive):
 	curl -JLO $(embeddedsw_url)
 
@@ -72,17 +66,11 @@ $(embeddedsw_sources): $(embeddedsw_archive)
 	tar -xf $<
 	touch $@
 
-$(arm_toolchain_archive):
-	curl -JLO $(arm_toolchain_url)
-
-$(arm_toolchain_gcc): $(arm_toolchain_archive)
-	tar -xf $<
-
-$(pmu_obj): $(embeddedsw_sources) $(pmu_obj_src)
-	aarch64-linux-gnu-gcc -c $(pmu_obj_src) \
+$(pmu_obj): $(embeddedsw_sources) $(pmu_obj_src) $(aarch64_linux_marker)
+	$(aarch64_linux_gcc) -c $(pmu_obj_src) \
 		-I $(embeddedsw_dir)/lib/bsp/standalone/src/common/ \
 		-I $(embeddedsw_dir)/lib/sw_services/xilpm/src/zynqmp/client/common/
-	aarch64-linux-gnu-objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
+	$(aarch64_linux_cross)objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
 
 $(pmufw):
 	curl -JLO $(pmufw_url)
@@ -93,8 +81,8 @@ $(atf_archive):
 $(atf_makefile): $(atf_archive)
 	tar -xf $<
 
-$(atf_bin): $(atf_makefile) $(arm_toolchain_gcc)
-	PATH=$(PATH):$(abspath $(arm_toolchain_bin)) $(MAKE) -C $(atf_dir) CROSS_COMPILE=$(arm_toolchain_triplet)- PLAT=zynqmp RESET_TO_BL31=1 bl31
+$(atf_bin): $(atf_makefile) $(aarch64_none_marker)
+	$(MAKE) -C $(atf_dir) CROSS_COMPILE=$(aarch64_none_cross) PLAT=zynqmp RESET_TO_BL31=1 bl31
 
 $(dts_destination): $(u_boot_unpacked) $(dts_source)
 	cp $(dts_source) $(dts_destination)
@@ -125,8 +113,8 @@ $(u_boot_patched): $(u_boot_patches_dir)
 	cd $(u_boot_dir); quilt push -a
 	touch $@
 
-$(u_boot_current_config): $(u_boot_patched)
-	CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) xilinx_zynqmp_virt_defconfig
+$(u_boot_current_config): $(u_boot_patched) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) xilinx_zynqmp_virt_defconfig
 	cd $(u_boot_dir); ./scripts/config --set-str DEFAULT_DEVICE_TREE "$(board_name)"
 	cd $(u_boot_dir); ./scripts/config --set-str PMUFW_INIT_FILE "$(abspath $(pmufw))"
 	cd $(u_boot_dir); ./scripts/config --set-str ZYNQMP_SPL_PM_CFG_OBJ_FILE "$(abspath $(pmu_obj))"
@@ -138,10 +126,10 @@ $(u_boot_current_config): $(u_boot_patched)
 	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_SIZE 256
 	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_PAGE_WRITE_BITS 8
 	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_PAGE_WRITE_DELAY_MS 0
-	CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
+	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
 
-$(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config)
-	BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=aarch64-linux-gnu- ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
+$(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config) $(aarch64_linux_marker)
+	BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
 	touch $@
 
 clean:
