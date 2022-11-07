@@ -43,3 +43,8 @@ device_tree_source_path=$(base_dir)/$(device_tree_source)
 
 hardware_definition=top_wrapper.xsa
 xsa_source=$(base_dir)/$(hardware_definition)
+
+rootfs_dir=$(base_dir)rootfs
+rootfs_first_stage=$(rootfs_dir)/.first_stage
+rootfs_second_stage=$(rootfs_dir)/.second_stage
+rootfs_done=$(rootfs_dir)/.done
