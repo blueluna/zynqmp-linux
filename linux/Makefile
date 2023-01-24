@@ -72,7 +72,7 @@ $(linux_headers_installed): $(linux_built) $(aarch64_linux_marker)
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(linux_headers_dir))
 	touch $@
 
-$(linux_image_output): $(linux_built)
+$(linux_image_output): $(linux_built) $(output_dir)
 	cp $(boot_dir)/Image.gz $(linux_image_output)
 
 clean:

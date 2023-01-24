@@ -11,7 +11,7 @@ Following packages might be required to be installed,
  * `flex`
  * `git-lfs`
  * `gnutls-dev` / `gnutls-devel`
- * `openssl-dev` / `openssl-devel`
+ * `libssl-dev` / `openssl-devel`
  * `uuid-dev` / `libuuid-devel`
 
 ## U-Boot

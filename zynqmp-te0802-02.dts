@@ -222,6 +222,27 @@
 	};
 };
 
+&spi0 {
+	status = "okay";
+	is-decoded-cs = <0>;
+	num-cs = <2>;
+
+	spidev@0 {
+		compatible = "rohm,dh2228fv";
+		spi-max-frequency = <30000000>;
+		reg = <0>; // chip select
+	};
+	spidev@1 {
+		compatible = "rohm,dh2228fv";
+		spi-max-frequency = <30000000>;
+		reg = <1>; // chip select
+	};
+};
+
+&spi1 {
+	status = "okay";
+};
+
 &rtc {
 	status = "okay";
 };
