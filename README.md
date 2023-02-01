@@ -166,6 +166,11 @@ CROSS_COMPILE=aarch64-linux-gnu- make menuconfig ARCH=arm64
 CROSS_COMPILE=aarch64-linux-gnu- make -j6 ARCH=arm64
 ```
 
+### SPI device
+
+https://yurovsky.github.io/2016/10/07/spidev-linux-devices.html
+
+
 ## Build Debian rootfs
 
 Install debootstrap and statically linked qemu,

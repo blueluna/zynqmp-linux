@@ -196,28 +196,37 @@
 &qspi {
 	status = "okay";
 	is-dual = <0>;
-	spi-tx-bus-width = <4>;
-	spi-rx-bus-width = <4>;
 	flash@0 {
 		compatible = "jedec,spi-nor";
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <1>;
+		spi-max-frequency = <50000000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0x0>;
 		partition@0 {
-			label = "boot";
-		    	reg = <0x00 0xa00000>;
+			label = "fsbl";
+			reg = <0x00 0x0080000>;
 		};
 		partition@1 {
-			label = "bootenv";
-			reg = <0xa00000 0x40000>;
+			label = "ssbl";
+			reg = <0x0080000 0x0600000>;
 		};
 		partition@2 {
-			label = "kernel";
-			reg = <0xa40000 0x1500000>;
+			label = "device-tree";
+			reg = <0x0680000 0x40000>;
 		};
 		partition@3 {
+			label = "kernel";
+			reg = <0x06c0000 0x1000000>;
+		};
+		partition@4 {
 			label = "bootscr";
-			reg = <0x1f40000 0x40000>;
+			reg = <0x16c0000 0x40000>;
+		};
+		partition@5 {
+			label = "bootenv";
+			reg = <0x1700000 0x40000>;
 		};
 	};
 };
