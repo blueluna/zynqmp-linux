@@ -5,18 +5,32 @@
 
 include ../constants.makefile
 
-linux_dir=linux-xlnx-$(xilinx_tag)
-linux_archive=$(linux_dir).tar.gz
-linux_url=https://github.com/Xilinx/linux-xlnx/archive/refs/tags/$(xilinx_tag).tar.gz
-linux_unpacked=$(linux_dir)/Makefile
-linux_patches_dir=$(linux_dir)/patches
-linux_configured=$(linux_dir)/.configured
-linux_built=$(linux_dir)/.built
+xilinx_linux_dir=linux-xlnx-$(xilinx_tag)
+xilinx_linux_archive=$(xilinx_linux_dir).tar.gz
+xilinx_linux_url=https://github.com/Xilinx/linux-xlnx/archive/refs/tags/$(xilinx_tag).tar.gz
+xilinx_linux_unpacked=$(xilinx_linux_dir)/Makefile
+xilinx_linux_patches_dir=$(xilinx_linux_dir)/patches
+xilinx_linux_configured=$(xilinx_linux_dir)/.configured
+xilinx_linux_built=$(xilinx_linux_dir)/.built
 
-boot_dir=$(linux_dir)/arch/arm64/boot
-device_tree_dir=$(boot_dir)/dts/xilinx
-dts_destination=$(device_tree_dir)/$(device_tree_source)
-dts_makefile=$(device_tree_dir)/Makefile
+xilinx_boot_dir=$(xilinx_linux_dir)/arch/arm64/boot
+xilinx_device_tree_dir=$(xilinx_boot_dir)/dts/xilinx
+xilinx_dts_destination=$(xilinx_device_tree_dir)/$(device_tree_source)
+xilinx_dts_makefile=$(xilinx_device_tree_dir)/Makefile
+
+mainline_linux_version=6.2.8
+mainline_linux_dir=linux-$(mainline_linux_version)
+mainline_linux_archive=$(mainline_linux_dir).tar.xz
+mainline_linux_url=https://cdn.kernel.org/pub/linux/kernel/v6.x/$(mainline_linux_archive)
+mainline_linux_unpacked=$(mainline_linux_dir)/Makefile
+mainline_linux_patches_dir=$(mainline_linux_dir)/patches
+mainline_linux_configured=$(mainline_linux_dir)/.configured
+mainline_linux_built=$(mainline_linux_dir)/.built
+
+mainline_boot_dir=$(mainline_linux_dir)/arch/arm64/boot
+mainline_device_tree_dir=$(mainline_boot_dir)/dts/xilinx
+mainline_dts_destination=$(mainline_device_tree_dir)/$(device_tree_source)
+mainline_dts_makefile=$(mainline_device_tree_dir)/Makefile
 
 linux_modules_dir=$(output_dir)/modules
 linux_modules_installed=$(linux_modules_dir)/.installed
@@ -28,22 +42,11 @@ linux_image_output=$(output_dir)/Image
 
 all: $(linux_image_output) $(linux_modules_installed) $(linux_headers_installed)
 
-.PHONY: clean
+.PHONY: clean mainline
 
 include ../common.makefile
 
 CROSS_COMPILE=$(aarch64_linux_cross)
-
-$(dts_destination): $(linux_unpacked) $(device_tree_source_path)
-	cp $(device_tree_source_path) $(dts_destination)
-	$(shell echo 'dtb-$$(CONFIG_ARCH_ZYNQMP) += $(device_tree_binary)' >> $(dts_makefile))
-
-$(linux_archive):
-	curl -JLO $(linux_url)
-
-$(linux_unpacked): $(linux_archive)
-	tar -xf $<
-	touch $@
 
 $(linux_modules_dir):
 	mkdir -p $@
@@ -53,27 +56,64 @@ $(linux_headers_dir):
 	mkdir -p $@
 	touch $@
 
-$(linux_configured): $(dts_destination) $(aarch64_linux_marker)
-	cp te0802_02_defconfig $(linux_dir)/arch/arm64/configs/
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(linux_dir) te0802_02_defconfig ARCH=arm64
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(linux_dir) oldconfig ARCH=arm64
+$(xilinx_dts_destination): $(xilinx_linux_unpacked) $(device_tree_source_path)
+	cp $(device_tree_source_path) $(xilinx_dts_destination)
+	$(shell echo 'dtb-$$(CONFIG_ARCH_ZYNQMP) += $(device_tree_binary)' >> $(xilinx_dts_makefile))
+
+$(xilinx_linux_archive):
+	curl -JLO $(xilinx_linux_url)
+
+$(xilinx_linux_unpacked): $(xilinx_linux_archive)
+	tar -xf $<
 	touch $@
 
-$(linux_built): $(linux_configured) $(aarch64_linux_marker)
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) ARCH=arm64
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) modules ARCH=arm64
+$(xilinx_linux_configured): $(xilinx_dts_destination) $(aarch64_linux_marker)
+	cp te0802_02_defconfig $(xilinx_linux_dir)/arch/arm64/configs/
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(xilinx_linux_dir) te0802_02_defconfig ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(xilinx_linux_dir) oldconfig ARCH=arm64
 	touch $@
 
-$(linux_modules_installed): $(linux_built) $(aarch64_linux_marker)
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(linux_modules_dir))
+$(xilinx_linux_built): $(xilinx_linux_configured) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(xilinx_linux_dir) ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(xilinx_linux_dir) modules ARCH=arm64
 	touch $@
 
-$(linux_headers_installed): $(linux_built) $(aarch64_linux_marker)
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(linux_headers_dir))
+$(linux_modules_installed): $(xilinx_linux_built) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(xilinx_linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(linux_modules_dir))
 	touch $@
 
-$(linux_image_output): $(linux_built) $(output_dir)
-	cp $(boot_dir)/Image.gz $(linux_image_output)
+$(linux_headers_installed): $(xilinx_linux_built) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(xilinx_linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(linux_headers_dir))
+	touch $@
+
+$(linux_image_output): $(xilinx_linux_built) $(output_dir)
+	cp $(xilinx_boot_dir)/Image.gz $(linux_image_output)
+
+$(mainline_dts_destination): $(mainline_linux_unpacked) $(device_tree_source_path)
+	cp $(device_tree_source_path) $(mainline_dts_destination)
+	$(shell echo 'dtb-$$(CONFIG_ARCH_ZYNQMP) += $(device_tree_binary)' >> $(mainline_dts_makefile))
+
+$(mainline_linux_archive):
+	curl -JLO $(mainline_linux_url)
+
+$(mainline_linux_unpacked): $(mainline_linux_archive)
+	tar -xf $<
+	touch $@
+
+$(mainline_linux_configured): $(mainline_dts_destination) $(aarch64_linux_marker)
+	cp te0802_02_defconfig $(mainline_linux_dir)/arch/arm64/configs/
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) te0802_02_defconfig ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) oldconfig ARCH=arm64
+	touch $@
+
+$(mainline_linux_built): $(mainline_linux_configured) $(aarch64_linux_marker)
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules ARCH=arm64
+	touch $@
+
+mainline: $(mainline_linux_built) $(output_dir)
+	#cp $(mainline_boot_dir)/Image.gz $(linux_image_output)
+
 
 clean:
-	rm -rf $(linux_dir) $(linux_modules_dir) $(linux_headers_dir)
+	rm -rf $(xilinx_linux_dir) $(mainline_linux_dir) $(linux_modules_dir) $(linux_headers_dir)

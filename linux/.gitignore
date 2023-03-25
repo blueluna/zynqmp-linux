@@ -1,4 +1,6 @@
 headers/
 modules/
 linux-xlnx*/
+linux-*/
 *tar.gz
+*tar.xz
