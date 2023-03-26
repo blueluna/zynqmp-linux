@@ -32,6 +32,13 @@ mainline_device_tree_dir=$(mainline_boot_dir)/dts/xilinx
 mainline_dts_destination=$(mainline_device_tree_dir)/$(device_tree_source)
 mainline_dts_makefile=$(mainline_device_tree_dir)/Makefile
 
+dtbocfg_version=0.0.9
+dtbocfg_dir=dtbocfg-$(dtbocfg_version)
+dtbocfg_archive=dtbocfg-$(dtbocfg_version).tar.gz
+dtbocfg_url=https://github.com/ikwzm/dtbocfg/archive/refs/tags/v${dtbocfg_version}.tar.gz
+dtbocfg_unpacked=$(dtbocfg_dir)/Makefile
+dtbocfg_built=$(dtbocfg_dir)/.built
+
 linux_modules_dir=$(output_dir)/modules
 linux_modules_installed=$(linux_modules_dir)/.installed
 
@@ -111,7 +118,19 @@ $(mainline_linux_built): $(mainline_linux_configured) $(aarch64_linux_marker)
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules ARCH=arm64
 	touch $@
 
-mainline: $(mainline_linux_built) $(output_dir)
+$(dtbocfg_archive):
+	curl -JLO $(dtbocfg_url)
+
+$(dtbocfg_unpacked): $(dtbocfg_archive)
+	tar -xf $<
+	touch $@
+
+$(dtbocfg_built): $(dtbocfg_unpacked) $(mainline_linux_built)
+	cd $(dtbocfg_dir) && CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) ARCH=arm64 KERNEL_SRC=$(abspath $(mainline_linux_dir))
+	cd $(dtbocfg_dir) && CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) modules_install -j$(num_jobs) ARCH=arm64 KERNEL_SRC=$(abspath $(mainline_linux_dir)) INSTALL_MOD_PATH=$(abspath $(linux_modules_dir))
+	touch $@
+
+mainline: $(mainline_linux_built) $(dtbocfg_built) $(output_dir)
 	#cp $(mainline_boot_dir)/Image.gz $(linux_image_output)
 
 

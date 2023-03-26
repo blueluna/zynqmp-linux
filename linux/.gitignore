@@ -1,6 +1,7 @@
 headers/
 modules/
-linux-xlnx*/
+dtbocfg-*/
 linux-*/
+linux-xlnx*/
 *tar.gz
 *tar.xz
