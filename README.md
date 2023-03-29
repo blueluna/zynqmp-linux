@@ -22,6 +22,8 @@ Reference: https://lucaceresoli.net/zynqmp-uboot-spl-pmufw-cfg-load/
 
 https://github.com/lucaceresoli/zynqmp-pmufw-binaries
 
+Building the toolchain requires at least, autoconf, texinfo, help2man, gawk, libtool-bin.
+
 ### Build PMU configuration object
 
 Using Xilinx Vitis, create a FSBL project using the platform (XSA) files. In the generated project, find the `pm_cfg_obj.c` file.
@@ -324,16 +326,6 @@ Need to set network capabilities.
 ```
 setcap cap_net_raw=ep $(which ping)
 ```
-
-### Reboot issue
-
-```
-Received exception
-MSR: 0x200, EAR: 0xFFE00001, EDR: 0x0, ESR: 0x4C4
-```
-
-https://github.com/Xilinx/embeddedsw/issues/172
-
 
 ### sudo permissions
 

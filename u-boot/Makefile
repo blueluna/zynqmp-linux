@@ -10,7 +10,7 @@ embeddedsw_url=https://github.com/Xilinx/embeddedsw/archive/refs/tags/xilinx_$(x
 embeddedsw_archive=$(embeddedsw_dir).tar.gz
 embeddedsw_sources=$(embeddedsw_dir)/.sources
 
-pmufw=pmufw-v2022.1.bin
+pmufw=pmufw-v2022.2.bin
 pmufw_url=https://github.com/lucaceresoli/zynqmp-pmufw-binaries/raw/master/bin/$(pmufw)
 
 pmu_obj_obj=pm_cfg_obj.o
@@ -75,7 +75,7 @@ $(pmu_obj): $(embeddedsw_sources) $(pmu_obj_src) $(aarch64_linux_marker)
 	$(aarch64_linux_cross)objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
 
 $(pmufw):
-	curl -JLO $(pmufw_url)
+#	curl -JLO $(pmufw_url)
 
 $(atf_archive):
 	curl -JLO $(atf_url)
