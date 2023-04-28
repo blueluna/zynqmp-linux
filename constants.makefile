@@ -8,8 +8,8 @@ base_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 num_processors=$(shell nproc)
 num_jobs=$(shell expr $(num_processors) - 2)
 
-download_dir=$(base_dir)/downloads
-output_dir=$(base_dir)/output
+download_dir=$(base_dir)downloads
+output_dir=$(base_dir)output
 
 xilinx_version=v2022.2
 xilinx_tag=xilinx-$(xilinx_version)

@@ -9,6 +9,9 @@ $(download_dir):
 $(output_dir):
 	mkdir -p $@
 
+$(rootfs_dir):
+	mkdir -p $@
+
 $(aarch64_none_archive_path): $(download_dir)
 	curl -JLO $(aarch64_none_url) --output-dir $(download_dir)
 

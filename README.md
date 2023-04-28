@@ -311,28 +311,18 @@ Do this late, will break domain name lookup
 apt-get install systemd-resolved
 ```
 
-## Issues
+Use archive copy to preserve permissions and such when copying the rootfs,
 
-### Ping permissions
-
-Cannot ping as a regular user.
-
-```
-ping: icmp open socket: Operation not permitted
+```shell
+cp -a rootfs/* /mount/rootfs
 ```
 
-Need to set network capabilities.
+## Extras
 
-```
-setcap cap_net_raw=ep $(which ping)
-```
+### log2ram
 
-### sudo permissions
+https://github.com/azlux/log2ram
 
-```
-sudo: /usr/bin/sudo must be owned by uid 0 and have the setuid bit set
-```
+### Minimal emacs
 
-```
-chmod 4755 /usr/bin/sudo
-```
+https://superuser.com/a/1028960

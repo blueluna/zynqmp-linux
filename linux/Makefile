@@ -49,13 +49,13 @@ linux_headers_installed=$(linux_headers_dir)/.installed
 linux_image_output=$(output_dir)/Image
 
 mainline_linux_output_dir=$(output_dir)/$(mainline_linux_dir)
-mainline_linux_modules_dir=$(mainline_linux_output_dir)/modules
+mainline_linux_modules_dir=$(rootfs_dir)
 mainline_linux_output_image=$(mainline_linux_output_dir)/Image
-mainline_linux_output_modules=$(mainline_linux_output_dir)/modules.builtin
+mainline_linux_output_modules=$(mainline_linux_modules_dir)/lib/modules/$(mainline_linux_version)//modules.builtin
 
-all: $(linux_image_output) $(linux_modules_installed) $(linux_headers_installed)
+default: mainline
 
-.PHONY: clean mainline
+.PHONY: clean
 
 include ../common.makefile
 
@@ -117,12 +117,8 @@ $(mainline_linux_output_dir):
 	mkdir -p $@
 	touch $@
 
-$(mainline_linux_modules_dir): $(mainline_linux_output_dir)
-	mkdir -p $@
-	touch $@
-
 $(mainline_linux_configured): $(mainline_dts_destination) $(aarch64_linux_marker)
-	cp te0802_02_defconfig $(mainline_linux_dir)/arch/arm64/configs/
+	cp $(mainline_linux_version)/te0802_02_defconfig $(mainline_linux_dir)/arch/arm64/configs/
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) te0802_02_defconfig ARCH=arm64
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) oldconfig ARCH=arm64
 	touch $@
@@ -147,12 +143,16 @@ $(mainline_linux_output_image): $(mainline_linux_built) $(mainline_linux_output_
 	cp $(mainline_boot_dir)/Image.gz $(mainline_linux_output_image)
 
 $(mainline_linux_output_modules): $(mainline_linux_built) $(mainline_linux_modules_dir)
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
 
 $(dtbocfg_installed): $(mainline_linux_output_modules) $(dtbocfg_built)
-	cd $(dtbocfg_dir) && CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) modules_install -j$(num_jobs) ARCH=arm64 KERNEL_SRC=$(abspath $(mainline_linux_dir)) INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
+	cd $(dtbocfg_dir) && CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) modules_install ARCH=arm64 KERNEL_SRC=$(abspath $(mainline_linux_dir)) INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
 
-mainline: $(mainline_linux_output_image) $(dtbocfg_installed) $(mainline_linux_output_modules)
+mainline: $(mainline_linux_output_image) $(dtbocfg_built)
+
+xilinx: $(xilinx_linux_built)
+
+install_modules: $(mainline_linux_output_modules) $(dtbocfg_installed)
 
 clean:
 	rm -rf $(xilinx_linux_dir) $(mainline_linux_dir) $(linux_modules_dir) $(linux_headers_dir) $(mainline_linux_output_dir)
