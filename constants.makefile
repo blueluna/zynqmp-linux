@@ -21,28 +21,28 @@ aarch64_none_dir=gcc-arm-$(arm_gcc_version)-x86_64-$(aarch64_none_triplet)
 aarch64_none_archive=$(aarch64_none_dir).tar.xz
 aarch64_none_archive_path=$(download_dir)/$(aarch64_none_archive)
 aarch64_none_url=https://developer.arm.com/-/media/Files/downloads/gnu/$(arm_gcc_version)/binrel/$(aarch64_none_archive)
-aarch64_none_bin=$(base_dir)/$(aarch64_none_dir)/bin
+aarch64_none_bin=$(base_dir)$(aarch64_none_dir)/bin
 aarch64_none_cross=$(aarch64_none_bin)/$(aarch64_none_triplet)-
 aarch64_none_gcc=$(aarch64_none_cross)gcc
-aarch64_none_marker=$(base_dir)/$(aarch64_none_dir)/.unpacked
+aarch64_none_marker=$(base_dir)$(aarch64_none_dir)/.unpacked
 
 aarch64_linux_triplet=aarch64-none-linux-gnu
 aarch64_linux_dir=gcc-arm-$(arm_gcc_version)-x86_64-$(aarch64_linux_triplet)
 aarch64_linux_archive=$(aarch64_linux_dir).tar.xz
 aarch64_linux_archive_path=$(download_dir)/$(aarch64_linux_archive)
 aarch64_linux_url=https://developer.arm.com/-/media/Files/downloads/gnu/$(arm_gcc_version)/binrel/$(aarch64_linux_archive)
-aarch64_linux_bin=$(base_dir)/$(aarch64_linux_dir)/bin
+aarch64_linux_bin=$(base_dir)$(aarch64_linux_dir)/bin
 aarch64_linux_cross=$(aarch64_linux_bin)/$(aarch64_linux_triplet)-
 aarch64_linux_gcc=$(aarch64_linux_cross)gcc
-aarch64_linux_marker=$(base_dir)/$(aarch64_linux_dir)/.unpacked
+aarch64_linux_marker=$(base_dir)$(aarch64_linux_dir)/.unpacked
 
 board_name=zynqmp-te0802-02
 device_tree_source=$(board_name).dts
 device_tree_binary=$(board_name).dtb
-device_tree_source_path=$(base_dir)/$(device_tree_source)
+device_tree_source_path=$(base_dir)$(device_tree_source)
 
 hardware_definition=top_wrapper.xsa
-xsa_source=$(base_dir)/$(hardware_definition)
+xsa_source=$(base_dir)$(hardware_definition)
 
 rootfs_dir=$(base_dir)rootfs
 rootfs_first_stage=$(rootfs_dir)/.first_stage

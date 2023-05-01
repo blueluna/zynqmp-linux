@@ -31,6 +31,9 @@ u_boot_unpacked=$(u_boot_dir)/Makefile
 u_boot_patches_dir=$(u_boot_dir)/patches
 u_boot_patched=$(u_boot_dir)/.patched
 u_boot_built=$(u_boot_dir)/.built
+u_boot_defconfig=te0802_02_defconfig
+u_boot_defconfig_src=te0802_02_defconfig
+u_boot_defconfig_dst=$(u_boot_dir)/configs/$(u_boot_defconfig)
 
 board_name=zynqmp-te0802-02
 
@@ -115,19 +118,13 @@ $(u_boot_patched): $(u_boot_patches_dir)
 	cd $(u_boot_dir); quilt push -a
 	touch $@
 
-$(u_boot_current_config): $(u_boot_patched) $(aarch64_linux_marker)
-	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) xilinx_zynqmp_virt_defconfig
-	cd $(u_boot_dir); ./scripts/config --set-str DEFAULT_DEVICE_TREE "$(board_name)"
+$(u_boot_defconfig_dst): $(u_boot_defconfig_src)
+	cp $(u_boot_defconfig_src) $(u_boot_defconfig_dst)
+
+$(u_boot_current_config): $(u_boot_patched) $(aarch64_linux_marker) $(u_boot_defconfig_dst)
+	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) $(u_boot_defconfig)
 	cd $(u_boot_dir); ./scripts/config --set-str PMUFW_INIT_FILE "$(abspath $(pmufw))"
 	cd $(u_boot_dir); ./scripts/config --set-str ZYNQMP_SPL_PM_CFG_OBJ_FILE "$(abspath $(pmu_obj))"
-	cd $(u_boot_dir); ./scripts/config --set-val CONFIG_ZYNQ_GEM_I2C_MAC_OFFSET 0xFA
-	cd $(u_boot_dir); ./scripts/config --set-val CMD_EEPROM y
-	cd $(u_boot_dir); ./scripts/config --set-val CMD_EEPROM_LAYOUT n
-	cd $(u_boot_dir); ./scripts/config --set-val SYS_I2C_EEPROM_BUS 1
-	cd $(u_boot_dir); ./scripts/config --set-val SYS_I2C_EEPROM_ADDR_LEN 1
-	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_SIZE 256
-	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_PAGE_WRITE_BITS 8
-	cd $(u_boot_dir); ./scripts/config --set-val SYS_EEPROM_PAGE_WRITE_DELAY_MS 0
 	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
 
 $(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config) $(aarch64_linux_marker)

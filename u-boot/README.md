@@ -1,6 +1,6 @@
 # Bootloader
 
-## Quickstart
+## Quick Start
 
 ```
 $ make
