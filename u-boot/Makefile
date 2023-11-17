@@ -29,6 +29,7 @@ u_boot_archive=$(u_boot_dir).tar.bz2
 u_boot_url=https://ftp.denx.de/pub/u-boot/$(u_boot_archive)
 u_boot_unpacked=$(u_boot_dir)/Makefile
 u_boot_patches_dir=$(u_boot_dir)/patches
+u_boot_patches_linked=$(u_boot_patches_dir)/.linked
 u_boot_patched=$(u_boot_dir)/.patched
 u_boot_built=$(u_boot_dir)/.built
 u_boot_defconfig=te0802_02_defconfig
@@ -111,10 +112,11 @@ $(u_boot_unpacked): $(u_boot_archive)
 	tar -xf $<
 	touch $@
 
-$(u_boot_patches_dir): $(u_boot_unpacked)
+$(u_boot_patches_linked): $(u_boot_unpacked)
 	ln -s ../patches $(u_boot_patches_dir)
+	touch $@
 
-$(u_boot_patched): $(u_boot_patches_dir)
+$(u_boot_patched): $(u_boot_patches_linked)
 	cd $(u_boot_dir); quilt push -a
 	touch $@
 
