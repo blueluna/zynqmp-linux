@@ -15,7 +15,6 @@ include ../common.makefile
 
 $(rootfs_first_stage): $(rootfs_dir)
 	debootstrap --foreign --arch=arm64 --components=main,contrib,non-free,non-free-firmware testing $(rootfs_dir) http://ftp.se.debian.org/debian/
-#	fakechroot fakeroot debootstrap --foreign --variant=fakechroot --arch=arm64 --components=main,contrib,non-free,non-free-firmware testing $(rootfs_dir) http://ftp.se.debian.org/debian/
 	touch $@
 
 $(rootfs_second_stage): $(rootfs_first_stage)

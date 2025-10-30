@@ -8,8 +8,33 @@ base_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 num_processors=$(shell nproc)
 num_jobs=$(shell expr $(num_processors) - 2)
 
+V?=0
+ifeq ($(V),1)
+  Q=
+else
+  Q=@
+  MAKEFLAGS += -s
+endif
+
+TE0802_02_NAME=te0802-02
+MYIR_FZ3_NAME=myir-fz3
+
+board=
+
+ifeq ($(board),$(TE0802_02_NAME))
+  short_name=$(TE0802_02_NAME)
+  kernel_configuration_name=te0802_02_defconfig
+else ifeq ($(board),$(MYIR_FZ3_NAME))
+  short_name=$(MYIR_FZ3_NAME)
+  kernel_configuration_name=myir_fz3_defconfig
+endif
+
+board_dir=$(base_dir)$(short_name)
+board_name=zynqmp-$(short_name)
+
+
 download_dir=$(base_dir)downloads
-output_dir=$(base_dir)output
+output_dir=$(board_dir)/output
 
 xilinx_version=v2022.2
 xilinx_tag=xilinx-$(xilinx_version)
@@ -36,13 +61,12 @@ aarch64_linux_cross=$(aarch64_linux_bin)/$(aarch64_linux_triplet)-
 aarch64_linux_gcc=$(aarch64_linux_cross)gcc
 aarch64_linux_marker=$(base_dir)$(aarch64_linux_dir)/.unpacked
 
-board_name=zynqmp-te0802-02
 device_tree_source=$(board_name).dts
 device_tree_binary=$(board_name).dtb
-device_tree_source_path=$(base_dir)$(device_tree_source)
+device_tree_source_path=$(board_dir)/$(device_tree_source)
 
-hardware_definition=top_wrapper.xsa
-xsa_source=$(base_dir)$(hardware_definition)
+hardware_definition=system.xsa
+xsa_source=$(board_dir)/$(hardware_definition)
 
 rootfs_dir=$(base_dir)rootfs
 rootfs_first_stage=$(rootfs_dir)/.first_stage

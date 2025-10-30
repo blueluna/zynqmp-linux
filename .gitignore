@@ -2,3 +2,5 @@ gcc-arm-*/
 downloads/
 output/
 rootfs/
+*.log
+.linked

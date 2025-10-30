@@ -5,6 +5,8 @@
 
 include ../constants.makefile
 
+board_dir_linux=$(board_dir)/linux
+
 xilinx_linux_dir=linux-xlnx-$(xilinx_tag)
 xilinx_linux_archive=$(xilinx_linux_dir).tar.gz
 xilinx_linux_url=https://github.com/Xilinx/linux-xlnx/archive/refs/tags/$(xilinx_tag).tar.gz
@@ -81,8 +83,8 @@ $(xilinx_linux_unpacked): $(xilinx_linux_archive)
 	touch $@
 
 $(xilinx_linux_configured): $(xilinx_dts_destination) $(aarch64_linux_marker)
-	cp te0802_02_defconfig $(xilinx_linux_dir)/arch/arm64/configs/
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(xilinx_linux_dir) te0802_02_defconfig ARCH=arm64
+	cp $(kernel_configuration_name) $(xilinx_linux_dir)/arch/arm64/configs/
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(xilinx_linux_dir) $(kernel_configuration_name) ARCH=arm64
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(xilinx_linux_dir) oldconfig ARCH=arm64
 	touch $@
 
@@ -118,8 +120,8 @@ $(mainline_linux_output_dir):
 	touch $@
 
 $(mainline_linux_configured): $(mainline_dts_destination) $(aarch64_linux_marker)
-	cp $(mainline_linux_version)/te0802_02_defconfig $(mainline_linux_dir)/arch/arm64/configs/
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) te0802_02_defconfig ARCH=arm64
+	cp $(board_dir_linux)/$(mainline_linux_version)/$(kernel_configuration_name) $(mainline_linux_dir)/arch/arm64/configs/
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) $(kernel_configuration_name) ARCH=arm64
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) oldconfig ARCH=arm64
 	touch $@
 
