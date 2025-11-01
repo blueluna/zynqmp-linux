@@ -156,5 +156,8 @@ xilinx: $(xilinx_linux_built)
 
 install_modules: $(mainline_linux_output_modules) $(dtbocfg_installed)
 
+config:
+	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64 menuconfig
+
 clean:
-	rm -rf $(xilinx_linux_dir) $(mainline_linux_dir) $(linux_modules_dir) $(linux_headers_dir) $(mainline_linux_output_dir)
+	rm -rf $(xilinx_linux_dir) $(mainline_linux_dir) $(linux_modules_dir) $(linux_headers_dir) $(mainline_linux_output_dir) $(dtbocfg_dir)

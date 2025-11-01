@@ -96,7 +96,7 @@ $(psu_init_source): $(xsa_source)
 	$(Q)unzip -qq -u -x $(xsa_source) -d $(xsa_dir)
 	$(Q)cp $(psu_init_source) $(psu_init_source).orig
 	$(Q)tr -d '\r' < $(psu_init_source).orig > $(psu_init_source)
-	$(Q)cd $(xsa_dir); patch -s -F 3 -p 1 -i ../$(psu_init_file).c.patch
+#	$(Q)cd $(xsa_dir); patch -s -F 3 -p 1 -i ../$(psu_init_file).c.patch
 
 $(psu_init_header): $(psu_init_source)
 
@@ -142,6 +142,9 @@ $(u_boot_image_output): $(u_boot_built) $(output_dir)
 
 $(device_tree_output): $(u_boot_built) $(output_dir)
 	$(Q)cp $(dts_dir)/$(device_tree_binary) $(device_tree_output)
+
+config: 
+	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) menuconfig
 
 clean:
 	$(Q)rm -f $(pmu_obj) $(pmu_obj_obj) $(pmu_obj) $(atf_bin)

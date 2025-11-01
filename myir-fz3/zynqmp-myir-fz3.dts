@@ -22,14 +22,15 @@
 		ethernet0 = &gem3;
 		i2c0 = &i2c0;
 		i2c1 = &i2c1;
+		rtc0 = &rtc;
 		serial0 = &uart0;
 		spi0 = &qspi;
+		usb0 = &usb0;
 	};
 
 	chosen {
-		bootargs = "earlycon clk_ignore_unused";
+		bootargs = "earlycon clk_ignore_unused console=ttyPS0,115200 cpuidle.off=1";
 		stdout-path = "serial0:115200n8";
-		xlnx,eeprom = &eeprom;
 	};
 
 	memory@0 {
@@ -54,6 +55,17 @@
 		#clock-cells = <0x00>;
 		clock-frequency = <100000000>;
    };
+
+	watchdog-gpio {
+		compatible = "linux,wdt-gpio";
+		gpios = <&gpio 41 GPIO_ACTIVE_LOW>;
+		hw_algo = "toggle";
+		hw_margin_ms = <1500>;
+		always-running;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_watchdog_default>;
+		status = "disabled";
+	};
 };
 
 &fpd_dma_chan1 {
@@ -92,59 +104,44 @@
 	status = "okay";
 	phy-mode = "rgmii-id";
 	local-mac-address = [02 0a 35 00 22 01];
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gem3_default>;
+	phy-handle = <&phy0>;
+	phy0: ethernet-phy@4 {
+		reg = <0x4>;
+	};
 };
 
 &gpio {
 	status = "okay";
-	emio-gpio-width = <0x20>;
-	gpio-mask-high = <0x00>;
-	gpio-mask-low = <0x5600>;
-
 };
 
 &i2c0 {
 	status = "okay";
 	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c0_default>;
 };
 
 &i2c1 {
 	status = "okay";
 	clock-frequency = <400000>;
-
-	eeprom: eeprom@50 {
-		compatible = "microchip,24aa025", "atmel,24c02";
-		reg = <0x50>;
-
-		#address-cells = <1>;
-		#size-cells = <1>;
-		eth0_addr: eth-mac-addr@FA {
-			reg = <0xFA 0x06>;
-		};
-	};
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1_default>;
 };
 
 &pinctrl0 {
 	status = "okay";
 	pinctrl_uart0_default: uart0-default {
 		mux {
-			groups = "uart0_2_grp";
+			groups = "uart0_8_grp";
 			function = "uart0";
 		};
 
 		conf {
-			groups = "uart0_2_grp";
+			groups = "uart0_8_grp";
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
-		};
-
-		conf-rx {
-			pins = "MIO11";
-			bias-high-impedance;
-		};
-
-		conf-tx {
-			pins = "MIO10";
-			bias-disable;
 		};
 	};
 
@@ -160,18 +157,102 @@
 			power-source = <IO_STANDARD_LVCMOS18>;
 			bias-disable;
 		};
+	};
+
+	pinctrl_sdhci1_default: sdhci1-default {
+		mux {
+			groups = "sdio1_0_grp";
+			function = "sdio1";
+		};
+
+		conf {
+			groups = "sdio1_0_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+			bias-disable;
+		};
 
 		mux-cd {
-			groups = "sdio0_cd_0_grp";
-			function = "sdio0_cd";
+			groups = "sdio1_cd_0_grp";
+			function = "sdio1_cd";
 		};
 
 		conf-cd {
-			groups = "sdio0_cd_0_grp";
+			groups = "sdio1_cd_0_grp";
 			bias-high-impedance;
 			bias-pull-up;
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+		
+		mux-wd {
+			function = "gpio0";
+			groups = "gpio0_41_grp";
+		};
+
+		conf-wd {
+			groups = "gpio0_41_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+
+		conf-wd-pull-none {
+			pins = "MIO41";
+			bias-disable;
+		};
+
+		mux-eth {
+			function = "gpio0";
+			groups = "gpio0_40_grp", "gpio0_39_grp";
+		};
+
+		conf-eth-reset {
+			pins = "MIO40";
+			bias-pull-up;
+		};
+	};
+
+	pinctrl_gem3_default: gem3-default {
+		mux {
+			function = "ethernet3";
+			groups = "ethernet3_0_grp";
+		};
+
+		mux-mdio {
+			function = "mdio3";
+			groups = "mdio3_0_grp";
+		};
+	};
+
+	pinctrl_i2c0_default: i2c0-default {
+		mux {
+			groups = "i2c0_10_grp";
+			function = "i2c0";
+		};
+	};
+
+	pinctrl_i2c1_default: i2c1-default {
+		mux {
+			groups = "i2c1_8_grp";
+			function = "i2c1";
+		};
+	};
+
+	pinctrl_watchdog_default: watchdog-default {
+		mux {
+			function = "gpio0";
+			groups = "gpio0_41_grp";
+		};
+
+		conf {
+			groups = "gpio0_41_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+
+		conf-pull-none {
+			pins = "MIO41";
+			bias-disable;
 		};
 	};
 };
@@ -191,59 +272,30 @@
 	status = "okay";
 	is-dual = <0>;
 	flash@0 {
-		compatible = "jedec,spi-nor";
-		spi-tx-bus-width = <4>;
-		spi-rx-bus-width = <1>;
-		spi-max-frequency = <50000000>;
+		compatible = "m25p80";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0x0>;
-		partition@0 {
-			label = "fsbl";
-			reg = <0x00 0x0080000>;
+		spi-tx-bus-width = <1>;
+		spi-rx-bus-width = <4>; 
+		spi-max-frequency = <54000000>; 
+		partition@qspi-fsbl-uboot { 
+			label = "qspi-fsbl-uboot";
+			reg = <0x0 0x900000>;
 		};
-		partition@1 {
-			label = "ssbl";
-			reg = <0x0080000 0x0600000>;
+		partition@qspi-linux { 
+			label = "qspi-linux";
+			reg = <0x900000 0x1000000>;
 		};
-		partition@2 {
-			label = "device-tree";
-			reg = <0x0680000 0x40000>;
+		partition@qspi-device-tree { 
+			label = "qspi-device-tree";
+			reg = <0x1900000 0x100000>;
 		};
-		partition@3 {
-			label = "kernel";
-			reg = <0x06c0000 0x1000000>;
-		};
-		partition@4 {
-			label = "bootscr";
-			reg = <0x16c0000 0x40000>;
-		};
-		partition@5 {
-			label = "bootenv";
-			reg = <0x1700000 0x40000>;
+		partition@qspi-rootfs { 
+			label = "qspi-data";
+			reg = <0x1a00000 0x600000>;
 		};
 	};
-};
-
-&spi0 {
-	status = "okay";
-	is-decoded-cs = <0>;
-	num-cs = <2>;
-
-	spidev@0 {
-		compatible = "rohm,dh2228fv";
-		spi-max-frequency = <30000000>;
-		reg = <0>; // chip select
-	};
-	spidev@1 {
-		compatible = "rohm,dh2228fv";
-		spi-max-frequency = <30000000>;
-		reg = <1>; // chip select
-	};
-};
-
-&spi1 {
-	status = "okay";
 };
 
 &rtc {
@@ -257,7 +309,18 @@
 	clock-frequency = <187500000>;
 	xlnx,mio-bank = <0>;
 	no-1-8-v;
+	non-removable;
 	disable-wp;
+};
+
+&sdhci1 {
+	status = "okay";
+	pinctrl-names = "default";
+	clock-frequency = <187500000>;
+	pinctrl-0 = <&pinctrl_sdhci1_default>;
+	xlnx,mio-bank = <1>;
+	no-1-8-v;
+	bus-width = <4>;
 };
 
 &uart0 {
