@@ -106,9 +106,13 @@
 	local-mac-address = [02 0a 35 00 22 01];
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gem3_default>;
-	phy-handle = <&phy0>;
-	phy0: ethernet-phy@4 {
-		reg = <0x4>;
+	mdio: mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy0: ethernet-phy@4 {
+			#phy-cells = <1>;
+			reg = <0x4>;
+		};
 	};
 };
 
@@ -126,8 +130,15 @@
 &i2c1 {
 	status = "okay";
 	clock-frequency = <400000>;
-	pinctrl-names = "default";
+	pinctrl-names = "default";	
 	pinctrl-0 = <&pinctrl_i2c1_default>;
+
+	eeprom@51 {
+		compatible = "atmel,24c256";
+		reg = <0x51>;
+		pagesize = <64>;
+		address-width = <16>;
+	};
 };
 
 &pinctrl0 {
@@ -276,23 +287,23 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0x0>;
-		spi-tx-bus-width = <1>;
+		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>; 
 		spi-max-frequency = <54000000>; 
-		partition@qspi-fsbl-uboot { 
-			label = "qspi-fsbl-uboot";
+		partition@fsbl { 
+			label = "fsbl";
 			reg = <0x0 0x900000>;
 		};
-		partition@qspi-linux { 
-			label = "qspi-linux";
+		partition@ssbl { 
+			label = "ssbl";
 			reg = <0x900000 0x1000000>;
 		};
-		partition@qspi-device-tree { 
-			label = "qspi-device-tree";
-			reg = <0x1900000 0x100000>;
+		partition@linux { 
+			label = "linux";
+			reg = <0x900000 0x1000000>;
 		};
-		partition@qspi-rootfs { 
-			label = "qspi-data";
+		partition@rootfs { 
+			label = "rootfs";
 			reg = <0x1a00000 0x600000>;
 		};
 	};

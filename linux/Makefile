@@ -20,7 +20,8 @@ xilinx_device_tree_dir=$(xilinx_boot_dir)/dts/xilinx
 xilinx_dts_destination=$(xilinx_device_tree_dir)/$(device_tree_source)
 xilinx_dts_makefile=$(xilinx_device_tree_dir)/Makefile
 
-mainline_linux_version=6.2.8
+# mainline_linux_version=6.2.8
+mainline_linux_version=6.12.57
 mainline_linux_dir=linux-$(mainline_linux_version)
 mainline_linux_archive=$(mainline_linux_dir).tar.xz
 mainline_linux_url=https://cdn.kernel.org/pub/linux/kernel/v6.x/$(mainline_linux_archive)
@@ -34,7 +35,7 @@ mainline_device_tree_dir=$(mainline_boot_dir)/dts/xilinx
 mainline_dts_destination=$(mainline_device_tree_dir)/$(device_tree_source)
 mainline_dts_makefile=$(mainline_device_tree_dir)/Makefile
 
-dtbocfg_version=0.0.9
+dtbocfg_version=0.1.1
 dtbocfg_dir=dtbocfg-$(dtbocfg_version)
 dtbocfg_archive=dtbocfg-$(dtbocfg_version).tar.gz
 dtbocfg_url=https://github.com/ikwzm/dtbocfg/archive/refs/tags/v${dtbocfg_version}.tar.gz
