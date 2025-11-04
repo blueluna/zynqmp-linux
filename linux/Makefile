@@ -20,7 +20,6 @@ xilinx_device_tree_dir=$(xilinx_boot_dir)/dts/xilinx
 xilinx_dts_destination=$(xilinx_device_tree_dir)/$(device_tree_source)
 xilinx_dts_makefile=$(xilinx_device_tree_dir)/Makefile
 
-# mainline_linux_version=6.2.8
 mainline_linux_version=6.12.57
 mainline_linux_dir=linux-$(mainline_linux_version)
 mainline_linux_archive=$(mainline_linux_dir).tar.xz

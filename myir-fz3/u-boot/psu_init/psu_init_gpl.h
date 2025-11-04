@@ -38166,17 +38166,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- int psu_init (); 
- unsigned long psu_ps_pl_isolation_removal_data(); 
- unsigned long psu_ps_pl_reset_config_data(); 
- int psu_protection(); 
- int psu_fpd_protection(); 
- int psu_ocm_protection(); 
- int psu_ddr_protection(); 
- int psu_lpd_protection(); 
- int psu_protection_lock(); 
+ int psu_init (void); 
+ unsigned long psu_ps_pl_isolation_removal_data(void); 
+ unsigned long psu_ps_pl_reset_config_data(void); 
+ int psu_protection(void); 
+ int psu_fpd_protection(void); 
+ int psu_ocm_protection(void); 
+ int psu_ddr_protection(void); 
+ int psu_lpd_protection(void); 
+ int psu_protection_lock(void); 
  unsigned long psu_ddr_qos_init_data(void); 
- unsigned long psu_apply_master_tz(); 
+ unsigned long psu_apply_master_tz(void); 
 #ifdef __cplusplus
 }
 #endif

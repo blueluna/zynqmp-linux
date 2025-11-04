@@ -31,10 +31,10 @@ u_boot_archive=$(u_boot_dir).tar.bz2
 u_boot_url=https://ftp.denx.de/pub/u-boot/$(u_boot_archive)
 u_boot_unpacked=$(u_boot_dir)/Makefile
 u_boot_patches_dir=$(u_boot_dir)/patches
-u_boot_patches_linked=$(u_boot_patches_dir)/.linked
+u_boot_patches_linked=$(u_boot_dir)/.patches_linked
 u_boot_patched=$(u_boot_dir)/.patched
 u_boot_built=$(u_boot_dir)/.built
-u_boot_defconfig_src=$(board_dir_u_boot)/$(kernel_configuration_name)
+u_boot_defconfig_src=$(board_dir_u_boot)/$(u_boot_version)/$(kernel_configuration_name)
 u_boot_defconfig_dst=$(u_boot_dir)/configs/$(kernel_configuration_name)
 
 dts_dir=$(u_boot_dir)/arch/arm/dts
@@ -42,10 +42,9 @@ dts_destination=$(dts_dir)/$(device_tree_source)
 
 u_boot_board_dir=$(u_boot_dir)/board/xilinx/zynqmp/$(board_name)
 
-xsa_dir=xsa
 psu_init_file=psu_init_gpl
-psu_init_header=$(xsa_dir)/$(psu_init_file).h
-psu_init_source=$(xsa_dir)/$(psu_init_file).c
+psu_init_header=$(board_dir_u_boot)/psu_init/$(psu_init_file).h
+psu_init_source=$(board_dir_u_boot)/psu_init/$(psu_init_file).c
 psu_init_installed=$(u_boot_board_dir)/$(psu_init_file).c
 
 u_boot_current_config=$(u_boot_dir)/.config
@@ -92,14 +91,6 @@ $(atf_bin): $(atf_makefile) $(aarch64_none_marker)
 $(dts_destination): $(u_boot_unpacked) $(device_tree_source_path)
 	$(Q)cp $(device_tree_source_path) $(dts_destination)
 
-$(psu_init_source): $(xsa_source)
-	$(Q)unzip -qq -u -x $(xsa_source) -d $(xsa_dir)
-	$(Q)cp $(psu_init_source) $(psu_init_source).orig
-	$(Q)tr -d '\r' < $(psu_init_source).orig > $(psu_init_source)
-#	$(Q)cd $(xsa_dir); patch -s -F 3 -p 1 -i ../$(psu_init_file).c.patch
-
-$(psu_init_header): $(psu_init_source)
-
 $(u_boot_board_dir): $(u_boot_unpacked)
 	$(Q)mkdir -p $@
 
@@ -114,7 +105,7 @@ $(u_boot_unpacked): $(u_boot_archive)
 	$(Q)touch $@
 
 $(u_boot_patches_linked): $(u_boot_unpacked)
-	$(Q)ln -s $(board_dir_u_boot)/patches $(u_boot_patches_dir)
+	$(Q)ln -s $(board_dir_u_boot)/$(u_boot_version)/patches $(u_boot_patches_dir)
 	$(Q)touch $@
 
 $(u_boot_patched): $(u_boot_patches_linked)
@@ -148,4 +139,4 @@ config:
 
 clean:
 	$(Q)rm -f $(pmu_obj) $(pmu_obj_obj) $(pmu_obj) $(atf_bin)
-	$(Q)rm -rf $(atf_dir) $(embeddedsw_dir) $(u_boot_dir) $(xsa_dir)
+	$(Q)rm -rf $(atf_dir) $(embeddedsw_dir) $(u_boot_dir)

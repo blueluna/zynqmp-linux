@@ -10,7 +10,6 @@ make
 
 Install kernel modules into rootfs.
 
-
 ```shell
 sudo make install_modules
 ```
