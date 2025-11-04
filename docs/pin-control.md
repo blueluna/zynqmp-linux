@@ -4,3 +4,6 @@ https://xterra2.avnet.com/xilinx/development-tools/petalinux/device-configuratio
 
 Chapter 28: Multiplexed I/O in Zynq UltraScale+ Device TRM (UG1085).
 
+```shell
+# cat /sys/kernel/debug/pinctrl/firmware:zynqmp-firmware:pinctrl-zynqmp_pinctrl/pingroups >> /home/<uer>/pingroups.txt
+```

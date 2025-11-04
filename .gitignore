@@ -4,3 +4,4 @@ output/
 rootfs/
 *.log
 .linked
+*.dtbo

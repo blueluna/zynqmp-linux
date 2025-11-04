@@ -37,18 +37,6 @@
 		device_type = "memory";
 		reg = <0x0 0x0 0x0 0x7ff00000>, <0x00000008 0x00000000 0x0 0x80000000>;
 	};
-	
-	refclk2:psgtr_dp_clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0x00>;
-		clock-frequency = <27000000>;
-	};
-
-	refclk1:psgtr_usb_clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0x00>;
-		clock-frequency = <26000000>;
-   };
 
    refclk0:psgtr_pcie_clock {
 		compatible = "fixed-clock";
@@ -56,6 +44,18 @@
 		clock-frequency = <100000000>;
    };
 
+	refclk1:psgtr_usb_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <26000000>;
+   };
+	
+	refclk2:psgtr_dp_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <27000000>;
+	};
+	/*
 	watchdog-gpio {
 		compatible = "linux,wdt-gpio";
 		gpios = <&gpio 41 GPIO_ACTIVE_LOW>;
@@ -64,7 +64,19 @@
 		always-running;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_watchdog_default>;
-		status = "disabled";
+		status = "okay";
+	};
+	*/
+	dpcon {
+		compatible = "dp-connector";
+		label = "P11";
+		type = "full-size";
+
+		port {
+			dpcon_in: endpoint {
+				remote-endpoint = <&dpsub_dp_out>;
+			};
+		};
 	};
 };
 
@@ -172,12 +184,12 @@
 
 	pinctrl_sdhci1_default: sdhci1-default {
 		mux {
-			groups = "sdio1_0_grp";
+			groups = "sdio1_2_grp";
 			function = "sdio1";
 		};
 
 		conf {
-			groups = "sdio1_0_grp";
+			groups = "sdio1_2_grp";
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
 			bias-disable;
@@ -194,32 +206,6 @@
 			bias-pull-up;
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
-		};
-		
-		mux-wd {
-			function = "gpio0";
-			groups = "gpio0_41_grp";
-		};
-
-		conf-wd {
-			groups = "gpio0_41_grp";
-			slew-rate = <SLEW_RATE_SLOW>;
-			power-source = <IO_STANDARD_LVCMOS18>;
-		};
-
-		conf-wd-pull-none {
-			pins = "MIO41";
-			bias-disable;
-		};
-
-		mux-eth {
-			function = "gpio0";
-			groups = "gpio0_40_grp", "gpio0_39_grp";
-		};
-
-		conf-eth-reset {
-			pins = "MIO40";
-			bias-pull-up;
 		};
 	};
 
@@ -375,8 +361,20 @@
 };
 
 &zynqmp_dpsub {
-	status = "okay";
 	phy-names = "dp-phy0", "dp-phy1";
+	/*             DMA, type? ? clock reference */
 	phys = <&psgtr 3 PHY_TYPE_DP 0 2>,
 	       <&psgtr 2 PHY_TYPE_DP 1 2>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		
+		port@5 {
+			reg = <5>;
+			dpsub_dp_out: endpoint {
+				remote-endpoint = <&dpcon_in>;
+			};
+		};
+	};
 };

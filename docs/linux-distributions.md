@@ -2,6 +2,8 @@
 
 ## Gentoo
 
+https://wiki.gentoo.org/wiki/Embedded_Handbook/General/Compiling_with_QEMU_user_chroot
+
 Inspired by [Quick Installation Checklist](https://wiki.gentoo.org/wiki/Quick_Installation_Checklist).
 
 [Download a stage 3 archive](https://www.gentoo.org/downloads/) and extract to a root file system.

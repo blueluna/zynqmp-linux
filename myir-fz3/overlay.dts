@@ -1,0 +1,17 @@
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target = <&fpga_full>;
+		__overlay__ {
+			firmware-name = "top_wrapper.bin";
+			resets = <&zynqmp_reset 116>;
+		};
+	};
+	fragment@1 {
+		target = <&zynqmp_dpsub>;
+		__overlay__ {
+	        status = "okay";
+		};
+	};
+};
