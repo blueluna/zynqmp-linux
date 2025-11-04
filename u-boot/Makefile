@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Bootloader for TE0802-02
+# Bootloader for ZynqMP
 #
 # Author: Erik Banvik <erik.public@gmail.com>
 
@@ -12,7 +12,7 @@ embeddedsw_url=https://github.com/Xilinx/embeddedsw/archive/refs/tags/xilinx_$(x
 embeddedsw_archive=$(embeddedsw_dir).tar.gz
 embeddedsw_sources=$(embeddedsw_dir)/.sources
 
-pmufw=pmufw-v2022.2.bin
+pmufw=pmufw-v2025.1.bin
 pmufw_url=https://github.com/lucaceresoli/zynqmp-pmufw-binaries/raw/master/bin/$(pmufw)
 
 pmu_obj_obj=pm_cfg_obj.o

@@ -16,6 +16,35 @@ https://github.com/lucaceresoli/zynqmp-pmufw-binaries
 
 Building the toolchain requires at least, autoconf, texinfo, help2man, gawk, libtool-bin.
 
+#### Building PMUFW
+
+Clone [zynqmp-pmufw-builder](https://github.com/lucaceresoli/zynqmp-pmufw-builder).
+
+```shell
+$ git clone --recurse-submodules https://github.com/lucaceresoli/zynqmp-pmufw-builder.git
+```
+
+Update crosstool-ng to 1.28.0
+
+```shell
+$ cd zynqmp-pmufw-builder
+$ cd crosstool-ng
+$ git checkout crosstool-ng-1.28.0
+$ cd ..
+```
+
+Build the toolchain
+
+```shell
+$ ./build.sh toolchain
+```
+
+Build the PMUFW, with error module enabled
+
+```shell
+$ CFLAGS="-DENABLE_EM" ./build.sh pmufw-build
+```
+
 ### Build PMU configuration object
 
 Using Xilinx Vitis, create a FSBL project using the platform (XSA) files. In the generated project, find the `pm_cfg_obj.c` file.
