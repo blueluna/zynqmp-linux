@@ -73,7 +73,8 @@ $(embeddedsw_sources): $(embeddedsw_archive)
 $(pmu_obj): $(embeddedsw_sources) $(board_dir_u_boot)/$(pmu_obj_src) $(aarch64_linux_marker)
 	$(Q)$(aarch64_linux_gcc) -c $(board_dir_u_boot)/$(pmu_obj_src) \
 		-I $(embeddedsw_dir)/lib/bsp/standalone/src/common/ \
-		-I $(embeddedsw_dir)/lib/sw_services/xilpm/src/zynqmp/client/common/
+		-I $(embeddedsw_dir)/lib/sw_services/xilpm/src/zynqmp/client/common/ \
+		-I .
 	$(Q)$(aarch64_linux_cross)objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
 
 $(pmufw):
@@ -122,7 +123,7 @@ $(u_boot_current_config): $(u_boot_patched) $(aarch64_linux_marker) $(u_boot_def
 	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
 
 $(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config) $(aarch64_linux_marker)
-	$(Q)BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
+	$(Q)BL31=$(abspath $(atf_bin)) CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
 	$(Q)touch $@
 
 $(u_boot_spl_image_output): $(u_boot_built) $(output_dir)

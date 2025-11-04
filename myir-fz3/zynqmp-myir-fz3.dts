@@ -361,6 +361,7 @@
 };
 
 &zynqmp_dpsub {
+	status = "okay";
 	phy-names = "dp-phy0", "dp-phy1";
 	/*             DMA, type? ? clock reference */
 	phys = <&psgtr 3 PHY_TYPE_DP 0 2>,
