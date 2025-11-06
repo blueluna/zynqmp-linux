@@ -36,7 +36,7 @@ $(rootfs_done): $(rootfs_second_stage)
 	LC_ALL=C $(run) /sbin/dpkg-reconfigure --frontend noninteractive locales
 	mount -t proc /proc $(rootfs_dir)/proc
 	echo "te0802" > $(rootfs_dir)/etc/hostname
-	$(run) apt-get install -y htop openssh-server polkitd pkexec sudo systemd-timesyncd
+	$(run) apt-get install -y htop openssh-server polkitd pkexec sudo systemd-timesyncd mtd-utils
 	cp $(rootfs_dir)/usr/lib/systemd/network/89-ethernet.network.example $(rootfs_dir)/etc/systemd/network/89-ethernet.network
 	$(run) useradd --create-home --shell /bin/bash -G adm,dialout,sudo erik
 	$(run) /bin/sh -c "echo \"root:s3cr37\nerik:te0802\" | chpasswd"

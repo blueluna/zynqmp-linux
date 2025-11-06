@@ -267,30 +267,41 @@
 
 &qspi {
 	status = "okay";
+	compatible = "xlnx,zynqmp-qspi-1.0";
 	is-dual = <0>;
 	flash@0 {
-		compatible = "m25p80";
+		compatible = "m25p80", "n25q256a", "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0x0>;
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>; 
-		spi-max-frequency = <54000000>; 
+		spi-max-frequency = <108000000>; 
+		// QSPI flash, 32Mb
 		partition@fsbl { 
+			// first stage boot loader, u-boot-spl, 1Mb
 			label = "fsbl";
-			reg = <0x0 0x900000>;
+			reg = <0x0000000 0x0100000>;
+		};
+		partition@ssbl_config { 
+			// second stage boot loader configuration, 1Mb
+			label = "ssbl_config";
+			reg = <0x0100000 0x0100000>;
 		};
 		partition@ssbl { 
+			// second stage boot loader, u-boot, 4Mb
 			label = "ssbl";
-			reg = <0x900000 0x1000000>;
+			reg = <0x0200000 0x0400000>;
 		};
 		partition@linux { 
+			// Linux kernel, 10Mb
 			label = "linux";
-			reg = <0x900000 0x1000000>;
+			reg = <0x0600000 0x0a00000>;
 		};
-		partition@rootfs { 
-			label = "rootfs";
-			reg = <0x1a00000 0x600000>;
+		// Data, 16Mb
+		partition@data { 
+			label = "data";
+			reg = <0x1000000 0x1000000>;
 		};
 	};
 };
