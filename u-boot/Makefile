@@ -43,8 +43,7 @@ dts_destination=$(dts_dir)/$(device_tree_source)
 u_boot_board_dir=$(u_boot_dir)/board/xilinx/zynqmp/$(board_name)
 
 psu_init_file=psu_init_gpl
-psu_init_header=$(board_dir_u_boot)/psu_init/$(psu_init_file).h
-psu_init_source=$(board_dir_u_boot)/psu_init/$(psu_init_file).c
+psu_init_source=$(board_dir_u_boot)/$(psu_init_file).c
 psu_init_installed=$(u_boot_board_dir)/$(psu_init_file).c
 
 u_boot_current_config=$(u_boot_dir)/.config
@@ -55,9 +54,7 @@ u_boot_spl_image_output=$(output_dir)/$(u_boot_spl_image)
 u_boot_image=u-boot.itb
 u_boot_image_output=$(output_dir)/$(u_boot_image)
 
-device_tree_output=$(output_dir)/$(device_tree_binary)
-
-all: $(u_boot_spl_image_output) $(u_boot_image_output) $(device_tree_output)
+all: $(u_boot_spl_image_output) $(u_boot_image_output)
 
 .PHONY: clean
 
@@ -95,8 +92,8 @@ $(dts_destination): $(u_boot_unpacked) $(device_tree_source_path)
 $(u_boot_board_dir): $(u_boot_unpacked)
 	$(Q)mkdir -p $@
 
-$(psu_init_installed): $(psu_init_header) $(psu_init_source) $(u_boot_board_dir)
-	$(Q)cp $(psu_init_header) $(psu_init_source) $(u_boot_board_dir)
+$(psu_init_installed): $(psu_init_source) $(u_boot_board_dir)
+	$(Q)cp $(psu_init_source) $(u_boot_board_dir)
 
 $(u_boot_archive):
 	$(Q)curl -JLO $(u_boot_url)
@@ -131,9 +128,6 @@ $(u_boot_spl_image_output): $(u_boot_built) $(output_dir)
 
 $(u_boot_image_output): $(u_boot_built) $(output_dir)
 	$(Q)cp $(u_boot_dir)/$(u_boot_image) $(u_boot_image_output)
-
-$(device_tree_output): $(u_boot_built) $(output_dir)
-	$(Q)cp $(dts_dir)/$(device_tree_binary) $(device_tree_output)
 
 config: 
 	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) menuconfig

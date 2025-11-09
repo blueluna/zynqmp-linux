@@ -41,6 +41,8 @@
 #define CRL_APB_RPLL_CTRL_OFFSET                                                   0XFF5E0030
 #undef CRL_APB_RPLL_TO_FPD_CTRL_OFFSET 
 #define CRL_APB_RPLL_TO_FPD_CTRL_OFFSET                                            0XFF5E0048
+#undef CRL_APB_RPLL_FRAC_CFG_OFFSET 
+#define CRL_APB_RPLL_FRAC_CFG_OFFSET                                               0XFF5E0038
 #undef CRL_APB_AMS_REF_CTRL_OFFSET 
 #define CRL_APB_AMS_REF_CTRL_OFFSET                                                0XFF5E0108
 #undef CRL_APB_IOPLL_CFG_OFFSET 
@@ -251,6 +253,28 @@
 #define CRL_APB_RPLL_TO_FPD_CTRL_DIVISOR0_DEFVAL               0x00000400
 #define CRL_APB_RPLL_TO_FPD_CTRL_DIVISOR0_SHIFT                8
 #define CRL_APB_RPLL_TO_FPD_CTRL_DIVISOR0_MASK                 0x00003F00U
+
+/*
+* Fractional SDM bypass control. When 0, PLL is in integer mode and it ign
+    * ores all fractional data. When 1, PLL is in fractional mode and uses DAT
+    * A of this register for the fractional portion of the feedback divider.
+*/
+#undef CRL_APB_RPLL_FRAC_CFG_ENABLED_DEFVAL 
+#undef CRL_APB_RPLL_FRAC_CFG_ENABLED_SHIFT 
+#undef CRL_APB_RPLL_FRAC_CFG_ENABLED_MASK 
+#define CRL_APB_RPLL_FRAC_CFG_ENABLED_DEFVAL                   0x00000000
+#define CRL_APB_RPLL_FRAC_CFG_ENABLED_SHIFT                    31
+#define CRL_APB_RPLL_FRAC_CFG_ENABLED_MASK                     0x80000000U
+
+/*
+* Fractional value for the Feedback value.
+*/
+#undef CRL_APB_RPLL_FRAC_CFG_DATA_DEFVAL 
+#undef CRL_APB_RPLL_FRAC_CFG_DATA_SHIFT 
+#undef CRL_APB_RPLL_FRAC_CFG_DATA_MASK 
+#define CRL_APB_RPLL_FRAC_CFG_DATA_DEFVAL                      0x00000000
+#define CRL_APB_RPLL_FRAC_CFG_DATA_SHIFT                       0
+#define CRL_APB_RPLL_FRAC_CFG_DATA_MASK                        0x0000FFFFU
 
 /*
 * 6 bit divider
@@ -35226,6 +35250,17 @@
 #define SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_LCL_SEL_MASK       0x00000080U
 
 /*
+* Bit 0 of lane 0 ref clock mux one hot sel. Set to 1 to select lane 0 sli
+    * cer output from ref clock network
+*/
+#undef SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_DEFVAL 
+#undef SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_SHIFT 
+#undef SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_MASK 
+#define SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_DEFVAL       0x00000080
+#define SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_SHIFT        0
+#define SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0_MASK         0x00000001U
+
+/*
 * Sel of lane 1 ref clock local mux. Set to 1 to select lane 1 slicer outp
     * ut. Set to 0 to select lane1 ref clock mux output.
 */
@@ -38166,17 +38201,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- int psu_init (void); 
- unsigned long psu_ps_pl_isolation_removal_data(void); 
- unsigned long psu_ps_pl_reset_config_data(void); 
- int psu_protection(void); 
- int psu_fpd_protection(void); 
- int psu_ocm_protection(void); 
- int psu_ddr_protection(void); 
- int psu_lpd_protection(void); 
- int psu_protection_lock(void); 
+ int psu_init (); 
+ unsigned long psu_ps_pl_isolation_removal_data(); 
+ unsigned long psu_ps_pl_reset_config_data(); 
+ int psu_protection(); 
+ int psu_fpd_protection(); 
+ int psu_ocm_protection(); 
+ int psu_ddr_protection(); 
+ int psu_lpd_protection(); 
+ int psu_protection_lock(); 
  unsigned long psu_ddr_qos_init_data(void); 
- unsigned long psu_apply_master_tz(void); 
+ unsigned long psu_apply_master_tz(); 
 #ifdef __cplusplus
 }
 #endif

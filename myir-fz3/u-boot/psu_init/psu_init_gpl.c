@@ -22,10 +22,20 @@
 #include <sleep.h>
 #include "psu_init_gpl.h"
 #define    DPLL_CFG_LOCK_DLY        63
-#define    DPLL_CFG_LOCK_CNT        625
+#define    DPLL_CFG_LOCK_CNT        600
 #define    DPLL_CFG_LFHF            3
 #define    DPLL_CFG_CP              3
 #define    DPLL_CFG_RES             2
+
+#define    DPLL_CFG_FBDIV           72
+#define    DPLL_CFG_DIV2            1
+
+
+#define    DPLL_CFG_LOCK_DLY_SLOW_BOOT        63
+#define    DPLL_CFG_LOCK_CNT_SLOW_BOOT        750
+#define    DPLL_CFG_LFHF_SLOW_BOOT            3
+#define    DPLL_CFG_CP_SLOW_BOOT              3
+#define    DPLL_CFG_RES_SLOW_BOOT             12
 
 static int mask_pollOnValue(u32 add, u32 mask, u32 value);
 
@@ -35,7 +45,7 @@ static void mask_delay(u32 delay);
 
 static u32 mask_read(u32 add, u32 mask);
 
-static int serdes_rst_seq (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
+static int serdes_rst_seq (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
 
 static int serdes_bist_static_settings(u32 lane_active); 
 
@@ -43,7 +53,7 @@ static int serdes_bist_run(u32 lane_active);
 
 static int serdes_bist_result(u32 lane_active);
 
-static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib);
+static int serdes_illcalib_pcie_gen1 (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib);
 
 static int serdes_illcalib (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
 
@@ -81,24 +91,24 @@ unsigned long psu_pll_init_data(void)
     * Register : RPLL_CFG @ 0XFF5E0034
 
     * PLL loop filter resistor control
-    *  PSU_CRL_APB_RPLL_CFG_RES                                    0xc
+    *  PSU_CRL_APB_RPLL_CFG_RES                                    0x2
 
     * PLL charge pump control
-    *  PSU_CRL_APB_RPLL_CFG_CP                                     0x3
+    *  PSU_CRL_APB_RPLL_CFG_CP                                     0x4
 
     * PLL loop filter high frequency capacitor control
     *  PSU_CRL_APB_RPLL_CFG_LFHF                                   0x3
 
     * Lock circuit counter setting
-    *  PSU_CRL_APB_RPLL_CFG_LOCK_CNT                               0x307
+    *  PSU_CRL_APB_RPLL_CFG_LOCK_CNT                               0x258
 
     * Lock circuit configuration settings for lock windowsize
     *  PSU_CRL_APB_RPLL_CFG_LOCK_DLY                               0x3f
 
     * Helper data. Values are to be looked up in a table from Data Sheet
-    * (OFFSET, MASK, VALUE)      (0XFF5E0034, 0xFE7FEDEFU ,0x7E60EC6CU)
+    * (OFFSET, MASK, VALUE)      (0XFF5E0034, 0xFE7FEDEFU ,0x7E4B0C82U)
     */
-	PSU_Mask_Write(CRL_APB_RPLL_CFG_OFFSET, 0xFE7FEDEFU, 0x7E60EC6CU);
+	PSU_Mask_Write(CRL_APB_RPLL_CFG_OFFSET, 0xFE7FEDEFU, 0x7E4B0C82U);
 /*##################################################################### */
 
     /*
@@ -113,16 +123,16 @@ unsigned long psu_pll_init_data(void)
     *  PSU_CRL_APB_RPLL_CTRL_PRE_SRC                               0x0
 
     * The integer portion of the feedback divider to the PLL
-    *  PSU_CRL_APB_RPLL_CTRL_FBDIV                                 0x30
+    *  PSU_CRL_APB_RPLL_CTRL_FBDIV                                 0x58
 
     * This turns on the divide by 2 that is inside of the PLL. This does not c
     * hange the VCO frequency, just the output frequency
     *  PSU_CRL_APB_RPLL_CTRL_DIV2                                  0x1
 
     * PLL Basic Control
-    * (OFFSET, MASK, VALUE)      (0XFF5E0030, 0x00717F00U ,0x00013000U)
+    * (OFFSET, MASK, VALUE)      (0XFF5E0030, 0x00717F00U ,0x00015800U)
     */
-	PSU_Mask_Write(CRL_APB_RPLL_CTRL_OFFSET, 0x00717F00U, 0x00013000U);
+	PSU_Mask_Write(CRL_APB_RPLL_CTRL_OFFSET, 0x00717F00U, 0x00015800U);
 /*##################################################################### */
 
     /*
@@ -211,19 +221,37 @@ unsigned long psu_pll_init_data(void)
     * Register : RPLL_TO_FPD_CTRL @ 0XFF5E0048
 
     * Divisor value for this clock.
-    *  PSU_CRL_APB_RPLL_TO_FPD_CTRL_DIVISOR0                       0x2
+    *  PSU_CRL_APB_RPLL_TO_FPD_CTRL_DIVISOR0                       0x3
 
     * Control for a clock that will be generated in the LPD, but used in the F
     * PD as a clock source for the peripheral clock muxes.
-    * (OFFSET, MASK, VALUE)      (0XFF5E0048, 0x00003F00U ,0x00000200U)
+    * (OFFSET, MASK, VALUE)      (0XFF5E0048, 0x00003F00U ,0x00000300U)
     */
 	PSU_Mask_Write(CRL_APB_RPLL_TO_FPD_CTRL_OFFSET,
-		0x00003F00U, 0x00000200U);
+		0x00003F00U, 0x00000300U);
 /*##################################################################### */
 
     /*
     * RPLL FRAC CFG
     */
+    /*
+    * Register : RPLL_FRAC_CFG @ 0XFF5E0038
+
+    * Fractional SDM bypass control. When 0, PLL is in integer mode and it ign
+    * ores all fractional data. When 1, PLL is in fractional mode and uses DAT
+    * A of this register for the fractional portion of the feedback divider.
+    *  PSU_CRL_APB_RPLL_FRAC_CFG_ENABLED                           0x1
+
+    * Fractional value for the Feedback value.
+    *  PSU_CRL_APB_RPLL_FRAC_CFG_DATA                              0x793e
+
+    * Fractional control for the PLL
+    * (OFFSET, MASK, VALUE)      (0XFF5E0038, 0x8000FFFFU ,0x8000793EU)
+    */
+	PSU_Mask_Write(CRL_APB_RPLL_FRAC_CFG_OFFSET,
+		0x8000FFFFU, 0x8000793EU);
+/*##################################################################### */
+
     /*
     * SYSMON CLOCK PRESET TO RPLL AGAIN TO AVOID GLITCH WHEN NEXT IOPLL WILL B
     * E PUT IN BYPASS MODE
@@ -1017,18 +1045,18 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRL_APB_SDIO1_REF_CTRL_DIVISOR1                         0x1
 
     * 6 bit divider
-    *  PSU_CRL_APB_SDIO1_REF_CTRL_DIVISOR0                         0x4
+    *  PSU_CRL_APB_SDIO1_REF_CTRL_DIVISOR0                         0x8
 
     * 000 = IOPLL; 010 = RPLL; 011 = VPLL; (This signal may only be toggled af
     * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
     *  usually an issue, but designers must be aware.)
-    *  PSU_CRL_APB_SDIO1_REF_CTRL_SRCSEL                           0x2
+    *  PSU_CRL_APB_SDIO1_REF_CTRL_SRCSEL                           0x0
 
     * This register controls this reference clock
-    * (OFFSET, MASK, VALUE)      (0XFF5E0070, 0x013F3F07U ,0x01010402U)
+    * (OFFSET, MASK, VALUE)      (0XFF5E0070, 0x013F3F07U ,0x01010800U)
     */
 	PSU_Mask_Write(CRL_APB_SDIO1_REF_CTRL_OFFSET,
-		0x013F3F07U, 0x01010402U);
+		0x013F3F07U, 0x01010800U);
 /*##################################################################### */
 
     /*
@@ -1174,18 +1202,18 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRL_APB_IOU_SWITCH_CTRL_CLKACT                          0x1
 
     * 6 bit divider
-    *  PSU_CRL_APB_IOU_SWITCH_CTRL_DIVISOR0                        0x3
+    *  PSU_CRL_APB_IOU_SWITCH_CTRL_DIVISOR0                        0x6
 
     * 000 = RPLL; 010 = IOPLL; 011 = DPLL; (This signal may only be toggled af
     * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
     *  usually an issue, but designers must be aware.)
-    *  PSU_CRL_APB_IOU_SWITCH_CTRL_SRCSEL                          0x0
+    *  PSU_CRL_APB_IOU_SWITCH_CTRL_SRCSEL                          0x2
 
     * This register controls this reference clock
-    * (OFFSET, MASK, VALUE)      (0XFF5E009C, 0x01003F07U ,0x01000300U)
+    * (OFFSET, MASK, VALUE)      (0XFF5E009C, 0x01003F07U ,0x01000602U)
     */
 	PSU_Mask_Write(CRL_APB_IOU_SWITCH_CTRL_OFFSET,
-		0x01003F07U, 0x01000300U);
+		0x01003F07U, 0x01000602U);
 /*##################################################################### */
 
     /*
@@ -1302,18 +1330,18 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRL_APB_PL0_REF_CTRL_DIVISOR1                           0x1
 
     * 6 bit divider
-    *  PSU_CRL_APB_PL0_REF_CTRL_DIVISOR0                           0x8
+    *  PSU_CRL_APB_PL0_REF_CTRL_DIVISOR0                           0xf
 
     * 000 = IOPLL; 010 = RPLL; 011 = DPLL; (This signal may only be toggled af
     * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
     *  usually an issue, but designers must be aware.)
-    *  PSU_CRL_APB_PL0_REF_CTRL_SRCSEL                             0x2
+    *  PSU_CRL_APB_PL0_REF_CTRL_SRCSEL                             0x0
 
     * This register controls this reference clock
-    * (OFFSET, MASK, VALUE)      (0XFF5E00C0, 0x013F3F07U ,0x01010802U)
+    * (OFFSET, MASK, VALUE)      (0XFF5E00C0, 0x013F3F07U ,0x01010F00U)
     */
 	PSU_Mask_Write(CRL_APB_PL0_REF_CTRL_OFFSET,
-		0x013F3F07U, 0x01010802U);
+		0x013F3F07U, 0x01010F00U);
 /*##################################################################### */
 
     /*
@@ -1429,7 +1457,7 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRF_APB_DP_AUDIO_REF_CTRL_DIVISOR1                      0x1
 
     * 6 bit divider
-    *  PSU_CRF_APB_DP_AUDIO_REF_CTRL_DIVISOR0                      0x10
+    *  PSU_CRF_APB_DP_AUDIO_REF_CTRL_DIVISOR0                      0x14
 
     * 000 = VPLL; 010 = DPLL; 011 = RPLL_TO_FPD - might be using extra mux; (T
     * his signal may only be toggled after 4 cycles of the old clock and 4 cyc
@@ -1441,10 +1469,10 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRF_APB_DP_AUDIO_REF_CTRL_CLKACT                        0x1
 
     * This register controls this reference clock
-    * (OFFSET, MASK, VALUE)      (0XFD1A0074, 0x013F3F07U ,0x01011003U)
+    * (OFFSET, MASK, VALUE)      (0XFD1A0074, 0x013F3F07U ,0x01011403U)
     */
 	PSU_Mask_Write(CRF_APB_DP_AUDIO_REF_CTRL_OFFSET,
-		0x013F3F07U, 0x01011003U);
+		0x013F3F07U, 0x01011403U);
 /*##################################################################### */
 
     /*
@@ -1454,7 +1482,7 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRF_APB_DP_STC_REF_CTRL_DIVISOR1                        0x1
 
     * 6 bit divider
-    *  PSU_CRF_APB_DP_STC_REF_CTRL_DIVISOR0                        0xf
+    *  PSU_CRF_APB_DP_STC_REF_CTRL_DIVISOR0                        0x13
 
     * 000 = VPLL; 010 = DPLL; 011 = RPLL_TO_FPD; (This signal may only be togg
     * led after 4 cycles of the old clock and 4 cycles of the new clock. This
@@ -1465,10 +1493,10 @@ unsigned long psu_clock_init_data(void)
     *  PSU_CRF_APB_DP_STC_REF_CTRL_CLKACT                          0x1
 
     * This register controls this reference clock
-    * (OFFSET, MASK, VALUE)      (0XFD1A007C, 0x013F3F07U ,0x01010F03U)
+    * (OFFSET, MASK, VALUE)      (0XFD1A007C, 0x013F3F07U ,0x01011303U)
     */
 	PSU_Mask_Write(CRF_APB_DP_STC_REF_CTRL_OFFSET,
-		0x013F3F07U, 0x01010F03U);
+		0x013F3F07U, 0x01011303U);
 /*##################################################################### */
 
     /*
@@ -2203,12 +2231,12 @@ unsigned long psu_ddr_init_data(void)
     * d the device density. The user should program the appropriate value from
     *  the spec based on the 'refresh_mode' and the device density that is use
     * d. Unit: Clocks.
-    *  PSU_DDRC_RFSHTMG_T_RFC_MIN                                  0xd2
+    *  PSU_DDRC_RFSHTMG_T_RFC_MIN                                  0xd3
 
     * Refresh Timing Register
-    * (OFFSET, MASK, VALUE)      (0XFD070064, 0x0FFF83FFU ,0x009280D2U)
+    * (OFFSET, MASK, VALUE)      (0XFD070064, 0x0FFF83FFU ,0x009280D3U)
     */
-	PSU_Mask_Write(DDRC_RFSHTMG_OFFSET, 0x0FFF83FFU, 0x009280D2U);
+	PSU_Mask_Write(DDRC_RFSHTMG_OFFSET, 0x0FFF83FFU, 0x009280D3U);
 /*##################################################################### */
 
     /*
@@ -2455,7 +2483,7 @@ unsigned long psu_ddr_init_data(void)
     * re is ignored. The uMCTL2 sets this bit appropriately. DDR3/DDR4: Value
     * loaded into MR0 register. mDDR: Value to write to MR register. LPDDR2/LP
     * DDR3/LPDDR4 - Value to write to MR1 register
-    *  PSU_DDRC_INIT3_MR                                           0x934
+    *  PSU_DDRC_INIT3_MR                                           0xb34
 
     * DDR2: Value to write to EMR register. Bits 9:7 are for OCD and the setti
     * ng in this register is ignored. The uMCTL2 sets those bits appropriately
@@ -2466,9 +2494,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDRC_INIT3_EMR                                          0x301
 
     * SDRAM Initialization Register 3
-    * (OFFSET, MASK, VALUE)      (0XFD0700DC, 0xFFFFFFFFU ,0x09340301U)
+    * (OFFSET, MASK, VALUE)      (0XFD0700DC, 0xFFFFFFFFU ,0x0B340301U)
     */
-	PSU_Mask_Write(DDRC_INIT3_OFFSET, 0xFFFFFFFFU, 0x09340301U);
+	PSU_Mask_Write(DDRC_INIT3_OFFSET, 0xFFFFFFFFU, 0x0B340301U);
 /*##################################################################### */
 
     /*
@@ -2742,7 +2770,7 @@ unsigned long psu_ddr_init_data(void)
     * RATIO=2, 1T mode, divide the above value by 2. No rounding up. For confi
     * gurations with MEMC_FREQ_RATIO=2, 2T mode or LPDDR4 mode, divide the abo
     * ve value by 2 and round it up to the next integer value. Unit: Clocks.
-    *  PSU_DDRC_DRAMTMG1_RD2PRE                                    0x4
+    *  PSU_DDRC_DRAMTMG1_RD2PRE                                    0x5
 
     * tRC: Minimum time between activates to same bank. For configurations wit
     * h MEMC_FREQ_RATIO=2, program this to (tRC/2) and round up to next intege
@@ -2750,9 +2778,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDRC_DRAMTMG1_T_RC                                      0x1c
 
     * SDRAM Timing Register 1
-    * (OFFSET, MASK, VALUE)      (0XFD070104, 0x001F1F7FU ,0x0004041CU)
+    * (OFFSET, MASK, VALUE)      (0XFD070104, 0x001F1F7FU ,0x0004051CU)
     */
-	PSU_Mask_Write(DDRC_DRAMTMG1_OFFSET, 0x001F1F7FU, 0x0004041CU);
+	PSU_Mask_Write(DDRC_DRAMTMG1_OFFSET, 0x001F1F7FU, 0x0004051CU);
 /*##################################################################### */
 
     /*
@@ -2897,7 +2925,7 @@ unsigned long psu_ddr_init_data(void)
     * EH - DDR2: 1 - DDR3: tCKSRX - DDR4: tCKSRX For configurations with MEMC_
     * FREQ_RATIO=2, program this to recommended value divided by two and round
     *  it up to next integer.
-    *  PSU_DDRC_DRAMTMG5_T_CKSRX                                   0x6
+    *  PSU_DDRC_DRAMTMG5_T_CKSRX                                   0x7
 
     * This is the time after Self Refresh Down Entry that CK is maintained as
     * a valid clock. Specifies the clock disable delay after SRE. Recommended
@@ -2905,7 +2933,7 @@ unsigned long psu_ddr_init_data(void)
     * - DDR3: max (10 ns, 5 tCK) - DDR4: max (10 ns, 5 tCK) For configurations
     *  with MEMC_FREQ_RATIO=2, program this to recommended value divided by tw
     * o and round it up to next integer.
-    *  PSU_DDRC_DRAMTMG5_T_CKSRE                                   0x6
+    *  PSU_DDRC_DRAMTMG5_T_CKSRE                                   0x7
 
     * Minimum CKE low width for Self refresh or Self refresh power down entry
     * to exit timing in memory clock cycles. Recommended settings: - mDDR: tRF
@@ -2924,9 +2952,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDRC_DRAMTMG5_T_CKE                                     0x3
 
     * SDRAM Timing Register 5
-    * (OFFSET, MASK, VALUE)      (0XFD070114, 0x0F0F3F1FU ,0x06060403U)
+    * (OFFSET, MASK, VALUE)      (0XFD070114, 0x0F0F3F1FU ,0x07070403U)
     */
-	PSU_Mask_Write(DDRC_DRAMTMG5_OFFSET, 0x0F0F3F1FU, 0x06060403U);
+	PSU_Mask_Write(DDRC_DRAMTMG5_OFFSET, 0x0F0F3F1FU, 0x07070403U);
 /*##################################################################### */
 
     /*
@@ -2972,7 +3000,7 @@ unsigned long psu_ddr_init_data(void)
     * s with MEMC_FREQ_RATIO=2, program this to recommended value divided by t
     * wo and round it up to next integer. This is only present for designs sup
     * porting mDDR or LPDDR2/LPDDR3/LPDDR4 devices.
-    *  PSU_DDRC_DRAMTMG7_T_CKPDE                                   0x6
+    *  PSU_DDRC_DRAMTMG7_T_CKPDE                                   0x7
 
     * This is the time before Power Down Exit that CK is maintained as a valid
     *  clock before issuing PDX. Specifies the clock stable time before PDX. R
@@ -2980,12 +3008,12 @@ unsigned long psu_ddr_init_data(void)
     * onfigurations with MEMC_FREQ_RATIO=2, program this to recommended value
     * divided by two and round it up to next integer. This is only present for
     *  designs supporting mDDR or LPDDR2/LPDDR3/LPDDR4 devices.
-    *  PSU_DDRC_DRAMTMG7_T_CKPDX                                   0x6
+    *  PSU_DDRC_DRAMTMG7_T_CKPDX                                   0x7
 
     * SDRAM Timing Register 7
-    * (OFFSET, MASK, VALUE)      (0XFD07011C, 0x00000F0FU ,0x00000606U)
+    * (OFFSET, MASK, VALUE)      (0XFD07011C, 0x00000F0FU ,0x00000707U)
     */
-	PSU_Mask_Write(DDRC_DRAMTMG7_OFFSET, 0x00000F0FU, 0x00000606U);
+	PSU_Mask_Write(DDRC_DRAMTMG7_OFFSET, 0x00000F0FU, 0x00000707U);
 /*##################################################################### */
 
     /*
@@ -3189,12 +3217,12 @@ unsigned long psu_ddr_init_data(void)
     * 4 devices. Meaningless, if ZQCTL0.dis_auto_zq=1. Unit: 1024 clock cycles
     * . This is only present for designs supporting DDR3/DDR4 or LPDDR2/LPDDR3
     * /LPDDR4 devices.
-    *  PSU_DDRC_ZQCTL1_T_ZQ_SHORT_INTERVAL_X1024                   0x1c9c2
+    *  PSU_DDRC_ZQCTL1_T_ZQ_SHORT_INTERVAL_X1024                   0x1c9c3
 
     * ZQ Control Register 1
-    * (OFFSET, MASK, VALUE)      (0XFD070184, 0x3FFFFFFFU ,0x0201C9C2U)
+    * (OFFSET, MASK, VALUE)      (0XFD070184, 0x3FFFFFFFU ,0x0201C9C3U)
     */
-	PSU_Mask_Write(DDRC_ZQCTL1_OFFSET, 0x3FFFFFFFU, 0x0201C9C2U);
+	PSU_Mask_Write(DDRC_ZQCTL1_OFFSET, 0x3FFFFFFFU, 0x0201C9C3U);
 /*##################################################################### */
 
     /*
@@ -5587,12 +5615,12 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_PGCR2_PLLFSMBYP                                 0x0
 
     * Refresh Period
-    *  PSU_DDR_PHY_PGCR2_TREFPRD                                   0x12090
+    *  PSU_DDR_PHY_PGCR2_TREFPRD                                   0x12098
 
     * PHY General Configuration Register 2
-    * (OFFSET, MASK, VALUE)      (0XFD080018, 0xFFFFFFFFU ,0x00F12090U)
+    * (OFFSET, MASK, VALUE)      (0XFD080018, 0xFFFFFFFFU ,0x00F12098U)
     */
-	PSU_Mask_Write(DDR_PHY_PGCR2_OFFSET, 0xFFFFFFFFU, 0x00F12090U);
+	PSU_Mask_Write(DDR_PHY_PGCR2_OFFSET, 0xFFFFFFFFU, 0x00F12098U);
 /*##################################################################### */
 
     /*
@@ -5805,7 +5833,7 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_DSGCR_DTOODT                                    0x0
 
     * PHY Update Acknowledge Delay
-    *  PSU_DDR_PHY_DSGCR_PUAD                                      0x5
+    *  PSU_DDR_PHY_DSGCR_PUAD                                      0x6
 
     * Controller Update Acknowledge Enable
     *  PSU_DDR_PHY_DSGCR_CUAEN                                     0x1
@@ -5823,9 +5851,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_DSGCR_PUREN                                     0x1
 
     * DDR System General Configuration Register
-    * (OFFSET, MASK, VALUE)      (0XFD080090, 0xFFFFFFFFU ,0x02A04161U)
+    * (OFFSET, MASK, VALUE)      (0XFD080090, 0xFFFFFFFFU ,0x02A041A1U)
     */
-	PSU_Mask_Write(DDR_PHY_DSGCR_OFFSET, 0xFFFFFFFFU, 0x02A04161U);
+	PSU_Mask_Write(DDR_PHY_DSGCR_OFFSET, 0xFFFFFFFFU, 0x02A041A1U);
 /*##################################################################### */
 
     /*
@@ -5844,12 +5872,12 @@ unsigned long psu_ddr_init_data(void)
     * Register : GPR1 @ 0XFD0800C4
 
     * General Purpose Register 1
-    *  PSU_DDR_PHY_GPR1_GPR1                                       0xe3
+    *  PSU_DDR_PHY_GPR1_GPR1                                       0xe5
 
     * General Purpose Register 1
-    * (OFFSET, MASK, VALUE)      (0XFD0800C4, 0xFFFFFFFFU ,0x000000E3U)
+    * (OFFSET, MASK, VALUE)      (0XFD0800C4, 0xFFFFFFFFU ,0x000000E5U)
     */
-	PSU_Mask_Write(DDR_PHY_GPR1_OFFSET, 0xFFFFFFFFU, 0x000000E3U);
+	PSU_Mask_Write(DDR_PHY_GPR1_OFFSET, 0xFFFFFFFFU, 0x000000E5U);
 /*##################################################################### */
 
     /*
@@ -5922,12 +5950,12 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_DTPR0_RESERVED_7_5                              0x0
 
     * Internal read to precharge command delay
-    *  PSU_DDR_PHY_DTPR0_TRTP                                      0x9
+    *  PSU_DDR_PHY_DTPR0_TRTP                                      0xa
 
     * DRAM Timing Parameters Register 0
-    * (OFFSET, MASK, VALUE)      (0XFD080110, 0xFFFFFFFFU ,0x08261009U)
+    * (OFFSET, MASK, VALUE)      (0XFD080110, 0xFFFFFFFFU ,0x0826100AU)
     */
-	PSU_Mask_Write(DDR_PHY_DTPR0_OFFSET, 0xFFFFFFFFU, 0x08261009U);
+	PSU_Mask_Write(DDR_PHY_DTPR0_OFFSET, 0xFFFFFFFFU, 0x0826100AU);
 /*##################################################################### */
 
     /*
@@ -6296,7 +6324,7 @@ unsigned long psu_ddr_init_data(void)
     * Register : MR0 @ 0XFD080180
 
     * Reserved. Return zeroes on reads.
-    *  PSU_DDR_PHY_MR0_RESERVED_31_8                               0x8
+    *  PSU_DDR_PHY_MR0_RESERVED_31_8                               0xa
 
     * CA Terminating Rank
     *  PSU_DDR_PHY_MR0_CATR                                        0x0
@@ -6313,9 +6341,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_MR0_RSVD_2_0                                    0x4
 
     * LPDDR4 Mode Register 0
-    * (OFFSET, MASK, VALUE)      (0XFD080180, 0xFFFFFFFFU ,0x00000834U)
+    * (OFFSET, MASK, VALUE)      (0XFD080180, 0xFFFFFFFFU ,0x00000A34U)
     */
-	PSU_Mask_Write(DDR_PHY_MR0_OFFSET, 0xFFFFFFFFU, 0x00000834U);
+	PSU_Mask_Write(DDR_PHY_MR0_OFFSET, 0xFFFFFFFFU, 0x00000A34U);
 /*##################################################################### */
 
     /*
@@ -7345,7 +7373,7 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_ZQCR_PGWAIT_FRQB                                0x11
 
     * Programmable Wait for Frequency A
-    *  PSU_DDR_PHY_ZQCR_PGWAIT_FRQA                                0x17
+    *  PSU_DDR_PHY_ZQCR_PGWAIT_FRQA                                0x18
 
     * ZQ VREF Pad Enable
     *  PSU_DDR_PHY_ZQCR_ZQREFPEN                                   0x0
@@ -7375,9 +7403,9 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_ZQCR_ZQPD                                       0x0
 
     * ZQ Impedance Control Register
-    * (OFFSET, MASK, VALUE)      (0XFD080680, 0xFFFFFFFFU ,0x008AEA58U)
+    * (OFFSET, MASK, VALUE)      (0XFD080680, 0xFFFFFFFFU ,0x008B0A58U)
     */
-	PSU_Mask_Write(DDR_PHY_ZQCR_OFFSET, 0xFFFFFFFFU, 0x008AEA58U);
+	PSU_Mask_Write(DDR_PHY_ZQCR_OFFSET, 0xFFFFFFFFU, 0x008B0A58U);
 /*##################################################################### */
 
     /*
@@ -7724,15 +7752,15 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_DX0GCR4_RESERVED_7_6                            0x0
 
     * VREF Enable control for DQ IO (Single Ended) buffers of a byte lane.
-    *  PSU_DDR_PHY_DX0GCR4_DXREFIEN                                0xf
+    *  PSU_DDR_PHY_DX0GCR4_DXREFIEN                                0x1
 
     * VRMON control for DQ IO (Single Ended) buffers of a byte lane.
     *  PSU_DDR_PHY_DX0GCR4_DXREFIMON                               0x0
 
     * DATX8 n General Configuration Register 4
-    * (OFFSET, MASK, VALUE)      (0XFD080710, 0xFFFFFFFFU ,0x0E00B03CU)
+    * (OFFSET, MASK, VALUE)      (0XFD080710, 0xFFFFFFFFU ,0x0E00B004U)
     */
-	PSU_Mask_Write(DDR_PHY_DX0GCR4_OFFSET, 0xFFFFFFFFU, 0x0E00B03CU);
+	PSU_Mask_Write(DDR_PHY_DX0GCR4_OFFSET, 0xFFFFFFFFU, 0x0E00B004U);
 /*##################################################################### */
 
     /*
@@ -8001,15 +8029,15 @@ unsigned long psu_ddr_init_data(void)
     *  PSU_DDR_PHY_DX1GCR4_RESERVED_7_6                            0x0
 
     * VREF Enable control for DQ IO (Single Ended) buffers of a byte lane.
-    *  PSU_DDR_PHY_DX1GCR4_DXREFIEN                                0xf
+    *  PSU_DDR_PHY_DX1GCR4_DXREFIEN                                0x1
 
     * VRMON control for DQ IO (Single Ended) buffers of a byte lane.
     *  PSU_DDR_PHY_DX1GCR4_DXREFIMON                               0x0
 
     * DATX8 n General Configuration Register 4
-    * (OFFSET, MASK, VALUE)      (0XFD080810, 0xFFFFFFFFU ,0x0E00B03CU)
+    * (OFFSET, MASK, VALUE)      (0XFD080810, 0xFFFFFFFFU ,0x0E00B004U)
     */
-	PSU_Mask_Write(DDR_PHY_DX1GCR4_OFFSET, 0xFFFFFFFFU, 0x0E00B03CU);
+	PSU_Mask_Write(DDR_PHY_DX1GCR4_OFFSET, 0xFFFFFFFFU, 0x0E00B004U);
 /*##################################################################### */
 
     /*
@@ -16738,16 +16766,16 @@ unsigned long psu_peripherals_init_data(void)
 
     * Frequency in number of ticks per second. Valid range from 10 MHz to 100
     * MHz.
-    *  PSU_IOU_SCNTRS_BASE_FREQUENCY_ID_REGISTER_FREQ              0x1fc9f08
+    *  PSU_IOU_SCNTRS_BASE_FREQUENCY_ID_REGISTER_FREQ              0x1fca054
 
     * Program this register to match the clock frequency of the timestamp gene
     * rator, in ticks per second. For example, for a 50 MHz clock, program 0x0
     * 2FAF080. This register is not accessible to the read-only programming in
     * terface.
-    * (OFFSET, MASK, VALUE)      (0XFF260020, 0xFFFFFFFFU ,0x01FC9F08U)
+    * (OFFSET, MASK, VALUE)      (0XFF260020, 0xFFFFFFFFU ,0x01FCA054U)
     */
 	PSU_Mask_Write(IOU_SCNTRS_BASE_FREQUENCY_ID_REGISTER_OFFSET,
-		0xFFFFFFFFU, 0x01FC9F08U);
+		0xFFFFFFFFU, 0x01FCA054U);
 /*##################################################################### */
 
     /*
@@ -18877,13 +18905,17 @@ unsigned long psu_serdes_init_data(void)
 
     * Sel of lane 0 ref clock local mux. Set to 1 to select lane 0 slicer outp
     * ut. Set to 0 to select lane0 ref clock mux output.
-    *  PSU_SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_LCL_SEL             0x1
+    *  PSU_SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_LCL_SEL             0x0
+
+    * Bit 0 of lane 0 ref clock mux one hot sel. Set to 1 to select lane 0 sli
+    * cer output from ref clock network
+    *  PSU_SERDES_L0_L0_REF_CLK_SEL_L0_REF_CLK_SEL_0               0x1
 
     * Lane0 Ref Clock Selection Register
-    * (OFFSET, MASK, VALUE)      (0XFD402860, 0x00000080U ,0x00000080U)
+    * (OFFSET, MASK, VALUE)      (0XFD402860, 0x00000081U ,0x00000001U)
     */
 	PSU_Mask_Write(SERDES_L0_L0_REF_CLK_SEL_OFFSET,
-		0x00000080U, 0x00000080U);
+		0x00000081U, 0x00000001U);
 /*##################################################################### */
 
     /*
@@ -21992,6 +22024,8 @@ return 1;
 #define CRL_APB_RST_LPD_IOU2    ((CRL_APB_BASEADDR) + 0X00000238U)
 #define CRL_APB_RST_LPD_TOP    ((CRL_APB_BASEADDR) + 0X0000023CU)
 #define CRL_APB_IOU_SWITCH_CTRL    ((CRL_APB_BASEADDR) + 0X0000009CU)
+//static int serdes_rst_seq (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate);
+//static int serdes_illcalib_pcie_gen1 (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib);
 
 /**
  * CRF_APB Base Address
@@ -22085,7 +22119,6 @@ static u32 mask_read(u32 add, u32 mask)
 	return val;
 }
 
-//Kishore -- ILL calibration code begins
 //ILL calibration code begins
 #define SERDES_L0_TM_PLL_DIG_33 		0XFD402084
 #define SERDES_L1_TM_PLL_DIG_33 		0XFD406084
@@ -22334,13 +22367,15 @@ static u32 mask_read(u32 add, u32 mask)
 #undef SERDES_ICM_CFG1_OFFSET
 #define SERDES_ICM_CFG1_OFFSET     		0xFD410014
 
-static int serdes_rst_seq (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate)
+static int serdes_rst_seq (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate)
 {
-   Xil_Out32(SERDES_UPHY_SPARE0, 0x00000000); 
+	Xil_Out32(SERDES_UPHY_SPARE0, 0x00000000); 
+   //hsrx reset
    Xil_Out32(SERDES_L0_TM_ANA_BYP_4, 0x00000040); 
    Xil_Out32(SERDES_L1_TM_ANA_BYP_4, 0x00000040); 
    Xil_Out32(SERDES_L2_TM_ANA_BYP_4, 0x00000040); 
    Xil_Out32(SERDES_L3_TM_ANA_BYP_4, 0x00000040); 
+   //7 - enable for force tx clk reset; 6 - value of tx clock reset
    Xil_Out32(SERDES_L0_TM_PLL_DIG_33, 0x00000080); 
    Xil_Out32(SERDES_L1_TM_PLL_DIG_33, 0x00000080); 
    Xil_Out32(SERDES_L2_TM_PLL_DIG_33, 0x00000080); 
@@ -22350,6 +22385,7 @@ static int serdes_rst_seq (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protoco
    if (lane0_rate == 1) Xil_Out32(SERDES_UPHY_SPARE0, 0x0000000E);
    Xil_Out32(SERDES_UPHY_SPARE0, 0x00000006); 
    if (lane0_rate == 1) {
+      //2: force serializer reset enable; 3: serializer reset
       Xil_Out32(SERDES_L0_TX_ANA_TM_3, 0x00000004);
       Xil_Out32(SERDES_L1_TX_ANA_TM_3, 0x00000004);
       Xil_Out32(SERDES_L2_TX_ANA_TM_3, 0x00000004);
@@ -22364,10 +22400,10 @@ static int serdes_rst_seq (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protoco
       Xil_Out32(SERDES_UPHY_SPARE0, 0x0000000F);
       mask_delay (100);
    }
-   if (lane0_protocol != 0) mask_poll(SERDES_L0_PLL_STATUS_READ_1, 0x00000010U);
-   if (lane1_protocol != 0) mask_poll(SERDES_L1_PLL_STATUS_READ_1, 0x00000010U);
-   if (lane2_protocol != 0) mask_poll(SERDES_L2_PLL_STATUS_READ_1, 0x00000010U);
-   if (lane3_protocol != 0) mask_poll(SERDES_L3_PLL_STATUS_READ_1, 0x00000010U);
+   if (pllsel == 0) mask_poll(SERDES_L0_PLL_STATUS_READ_1, 0x00000010U);
+   if (pllsel == 1) mask_poll(SERDES_L1_PLL_STATUS_READ_1, 0x00000010U);
+   if (pllsel == 2) mask_poll(SERDES_L2_PLL_STATUS_READ_1, 0x00000010U);
+   if (pllsel == 3) mask_poll(SERDES_L3_PLL_STATUS_READ_1, 0x00000010U);
    mask_delay(50);
    Xil_Out32(SERDES_L0_TM_ANA_BYP_4, 0x000000C0); 
    Xil_Out32(SERDES_L1_TM_ANA_BYP_4, 0x000000C0); 
@@ -22578,23 +22614,28 @@ static int serdes_bist_result(u32 lane_active)
    return (1); 
 }
 
-static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib)
+static int serdes_illcalib_pcie_gen1 (u32 pllsel, u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate, u32 gen2_calib)
 {
 	u64 tempbistresult;
 	u32 currbistresult[4];
 	u32 prevbistresult[4];
+        u32 prev2bistresult[4];
         u32 itercount = 0; 
         u32 ill12_val[4], ill1_val[4];
         u32 loop=0;
         u32 iterresult[8]; 
         u32 meancount[4];
         u32 bistpasscount[4];
+        u32 bistpasscountfinal[4];
+        u32 bistpasscounttotal[4];
+        u32 bistpassholes[4];
         u32 meancountalt[4];
         u32 meancountalt_bistpasscount[4];
         u32 lane0_active;
         u32 lane1_active;
         u32 lane2_active;
         u32 lane3_active;
+        u32 retval;
 	
         lane0_active = (lane0_protocol == 1);
         lane1_active = (lane1_protocol == 1);
@@ -22608,7 +22649,11 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
           meancountalt_bistpasscount[loop]=0;
           meancount[loop] = 0;
           prevbistresult[loop] = 0;
+          prev2bistresult[loop] = 0;
           bistpasscount[loop] = 0;
+          bistpasscountfinal[loop] = 0;
+          bistpasscounttotal[loop] = 0;
+          bistpassholes[loop] = 0;
         }
         itercount = 0;
         if (lane0_active) serdes_bist_static_settings(0);
@@ -22666,7 +22711,7 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
           if (lane1_active == 1) currbistresult[1] = 0;
           if (lane2_active == 1) currbistresult[2] = 0;
           if (lane3_active == 1) currbistresult[3] = 0;
-          serdes_rst_seq (lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, lane0_rate);
+          serdes_rst_seq (pllsel, lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, lane0_rate);
           if (lane3_active == 1) serdes_bist_run(3);
           if (lane2_active == 1) serdes_bist_run(2);
           if (lane1_active == 1) serdes_bist_run(1);
@@ -22700,8 +22745,15 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
 
           for (loop=0; loop<=3; loop++)
           {
+             if ((currbistresult[loop] == 1) && (prevbistresult[loop] == 0) && (prev2bistresult[loop] == 1)) 
+             {
+                if (bistpasscount[loop]>0) bistpassholes[loop] = bistpassholes[loop]+1;
+             }
              if ((currbistresult[loop]==1) && (prevbistresult[loop]==1)) 
+             {
                 bistpasscount[loop] = bistpasscount[loop]+1; 
+                bistpasscounttotal[loop] = bistpasscounttotal[loop]+1; 
+             }
              if ((bistpasscount[loop]<4) && (currbistresult[loop]==0) && (itercount>2)) 
              {
                 if (meancountalt_bistpasscount[loop] < bistpasscount[loop])
@@ -22712,7 +22764,12 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
                 bistpasscount[loop] = 0;
              }
              if ((meancount[loop]==0) && (bistpasscount[loop]>=4) && ((currbistresult[loop]==0)||(itercount == 63)) && (prevbistresult[loop]==1)) 
+             {
                 meancount[loop] = (itercount-1)-((bistpasscount[loop]+1)/2);
+                bistpasscountfinal[loop] = bistpasscount[loop]+1; 
+             }
+
+             prev2bistresult[loop] = prevbistresult[loop];
              prevbistresult[loop] = currbistresult[loop];
           }
         }while(++itercount<64);
@@ -22732,22 +22789,60 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
           {
             ill1_val[loop] = ((0x04 + meancount[loop]*8) % 0x100);
             ill12_val[loop] = ((0x04 + meancount[loop]*8) >= 0x100) ? 0x10 : 0x00;
-            Xil_Out32(0xFFFE0000+loop*4,iterresult[loop]);
-            Xil_Out32(0xFFFE0010+loop*4,iterresult[loop+4]);
-            Xil_Out32(0xFFFE0020+loop*4,bistpasscount[loop]);
-            Xil_Out32(0xFFFE0030+loop*4,meancount[loop]);
+#ifdef XFSBL_DEBUG
+            if (Xil_In32(0xFFFF0090)==0xABCD) {
+               Xil_Out32(0xFFFF0000+loop*4,iterresult[loop]);
+               Xil_Out32(0xFFFF0010+loop*4,iterresult[loop+4]);
+               Xil_Out32(0xFFFF0020+loop*4,bistpasscount[loop]);
+               Xil_Out32(0xFFFF0030+loop*4,meancount[loop]);
+            } else {
+               Xil_Out32(0xFFFF00B0+loop*4,iterresult[loop]);
+               Xil_Out32(0xFFFF00C0+loop*4,iterresult[loop+4]);
+               Xil_Out32(0xFFFF00D0+loop*4,bistpasscount[loop]);
+               Xil_Out32(0xFFFF00E0+loop*4,meancount[loop]);
+            }
+#endif
           }
           if (gen2_calib == 1) 
           {
             ill1_val[loop] = ((0x104 + meancount[loop]*8) % 0x100);
             ill12_val[loop] = ((0x104 + meancount[loop]*8) >= 0x200) ? 0x02 : 0x01;
-            Xil_Out32(0xFFFE0040+loop*4,iterresult[loop]);
-            Xil_Out32(0xFFFE0050+loop*4,iterresult[loop+4]);
-            Xil_Out32(0xFFFE0060+loop*4,bistpasscount[loop]);
-            Xil_Out32(0xFFFE0070+loop*4,meancount[loop]);
+#ifdef XFSBL_DEBUG
+            if (Xil_In32(0xFFFF0090)==0xABCD) {
+               Xil_Out32(0xFFFF0040+loop*4,iterresult[loop]);
+               Xil_Out32(0xFFFF0050+loop*4,iterresult[loop+4]);
+               Xil_Out32(0xFFFF0060+loop*4,bistpasscount[loop]);
+               Xil_Out32(0xFFFF0070+loop*4,meancount[loop]);
+            } else {
+               Xil_Out32(0xFFFF00F0+loop*4,iterresult[loop]);
+               Xil_Out32(0xFFFF0100+loop*4,iterresult[loop+4]);
+               Xil_Out32(0xFFFF0110+loop*4,bistpasscount[loop]);
+               Xil_Out32(0xFFFF0120+loop*4,meancount[loop]);
+            }
+#endif
           }
         }
+		
+	retval = 0;
         if (gen2_calib != 1) 
+        {
+          retval = ((bistpasscount[3]<8)<<3) | ((bistpasscount[2]<8)<<2) | ((bistpasscount[1]<8)<<1) | (bistpasscount[0]<8);
+#ifdef XFSBL_DEBUG
+            if (Xil_In32(0xFFFF0090)==0xABCD) { Xil_Out32(0xFFFF0080,retval);}
+#endif
+        }
+        if (gen2_calib == 1) 
+        {
+          retval = (((bistpassholes[3]>2)|(bistpasscounttotal[3]<18)|(bistpasscounttotal[3]>37)|((bistpasscountfinal[3]+1)<bistpasscounttotal[3]))<<3) | 
+                   (((bistpassholes[2]>2)|(bistpasscounttotal[2]<18)|(bistpasscounttotal[2]>37)|((bistpasscountfinal[2]+1)<bistpasscounttotal[2]))<<2) | 
+                   (((bistpassholes[1]>2)|(bistpasscounttotal[1]<18)|(bistpasscounttotal[1]>37)|((bistpasscountfinal[1]+1)<bistpasscounttotal[1]))<<1) | 
+                   (((bistpassholes[0]>2)|(bistpasscounttotal[0]<18)|(bistpasscounttotal[0]>37)|((bistpasscountfinal[0]+1)<bistpasscounttotal[0])));
+#ifdef XFSBL_DEBUG
+            if (Xil_In32(0xFFFF0090)==0xABCD) { Xil_Out32(0xFFFF0084,retval);}
+#endif
+        }
+		
+		        if (gen2_calib != 1) 
         {
            if (lane0_active == 1) Xil_Out32(SERDES_L0_TM_E_ILL1,ill1_val[0]);
            if (lane0_active == 1) PSU_Mask_Write(SERDES_L0_TM_ILL12, 0x000000F0U, ill12_val[0]);
@@ -22901,7 +22996,7 @@ static int serdes_illcalib_pcie_gen1 (u32 lane3_protocol, u32 lane3_rate, u32 la
            PSU_Mask_Write(SERDES_TX_PROT_BUS_WIDTH, 0x000000C0U, 0x00000040U); 
            PSU_Mask_Write(SERDES_LPBK_CTRL1, 0x00000070U, 0x00000000U); 
         }
-        return 1;
+        return retval;
 }
 
 static int serdes_illcalib (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protocol, u32 lane2_rate, u32 lane1_protocol, u32 lane1_rate, u32 lane0_protocol, u32 lane0_rate)
@@ -22912,223 +23007,136 @@ static int serdes_illcalib (u32 lane3_protocol, u32 lane3_rate, u32 lane2_protoc
 //sata_gen1 = 1; sata_gen2 = 2; sata_gen3 = 3;
 //usb = 0; sgmii = 0; DP = 0;
 { 
-  unsigned int rdata=0;
-  unsigned int sata_gen2=1;
-  unsigned int temp_ill12=0;
-  unsigned int temp_PLL_REF_SEL_OFFSET;
-  unsigned int temp_TM_IQ_ILL1;
-  unsigned int temp_TM_E_ILL1;
-  unsigned int temp_tx_dig_tm_61;
-  unsigned int temp_tm_dig_6;
-  unsigned int temp_pll_fbdiv_frac_3_msb_offset;
+  unsigned int lockrange_gen1_bad[4];
+  unsigned int lockrange_gen2_bad[4];
+  unsigned int boot_temp_gt_25;
+  unsigned int loop=0;
+  u32 retval;
+
  
-  if ((lane0_protocol == 2)||(lane0_protocol == 1)) 
+ if (lane0_protocol == 1)
   {
     Xil_Out32(SERDES_L0_TM_IQ_ILL7, 0xF3);
     Xil_Out32(SERDES_L0_TM_E_ILL7, 0xF3);
     Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF3);
     Xil_Out32(SERDES_L0_TM_E_ILL8,0xF3);
   }
-  if ((lane1_protocol == 2)||(lane1_protocol == 1)) 
+  if (lane1_protocol == 1)
   {
     Xil_Out32(SERDES_L1_TM_IQ_ILL7, 0xF3);
     Xil_Out32(SERDES_L1_TM_E_ILL7, 0xF3);
     Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF3);
     Xil_Out32(SERDES_L1_TM_E_ILL8,0xF3);
   }
-  if ((lane2_protocol == 2)||(lane2_protocol == 1)) 
+  if (lane2_protocol == 1)
   {
     Xil_Out32(SERDES_L2_TM_IQ_ILL7, 0xF3);
     Xil_Out32(SERDES_L2_TM_E_ILL7, 0xF3);
     Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF3);
     Xil_Out32(SERDES_L2_TM_E_ILL8,0xF3);
   }
-  if ((lane3_protocol == 2)||(lane3_protocol == 1)) 
+  if (lane3_protocol == 1)
   {
     Xil_Out32(SERDES_L3_TM_IQ_ILL7, 0xF3);
     Xil_Out32(SERDES_L3_TM_E_ILL7, 0xF3);
     Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF3);
     Xil_Out32(SERDES_L3_TM_E_ILL8,0xF3);
   }
+    
   
-  if (sata_gen2 == 1) 
-  {
-    if (lane0_protocol == 2)
-    {
-      temp_pll_fbdiv_frac_3_msb_offset=Xil_In32(SERDES_L0_PLL_FBDIV_FRAC_3_MSB);
-      Xil_Out32(SERDES_L0_PLL_FBDIV_FRAC_3_MSB,0x0);
-      temp_PLL_REF_SEL_OFFSET = Xil_In32(SERDES_PLL_REF_SEL0_OFFSET);
-      PSU_Mask_Write(SERDES_PLL_REF_SEL0_OFFSET, 0x0000001FU, 0x0000000DU);
-      temp_TM_IQ_ILL1 = Xil_In32(SERDES_L0_TM_IQ_ILL1);
-      temp_TM_E_ILL1 = Xil_In32(SERDES_L0_TM_E_ILL1);
-      Xil_Out32(SERDES_L0_TM_IQ_ILL1,0x78);
-      temp_tx_dig_tm_61 = Xil_In32(SERDES_L0_TX_DIG_TM_61);
-      temp_tm_dig_6 = Xil_In32(SERDES_L0_TM_DIG_6);
-      PSU_Mask_Write(SERDES_L0_TX_DIG_TM_61, 0x0000000BU, 0x00000000U);
-      PSU_Mask_Write(SERDES_L0_TM_DIG_6, 0x0000000FU, 0x00000000U);
-      temp_ill12 = Xil_In32(SERDES_L0_TM_ILL12) & 0xF0;
-  
-      serdes_illcalib_pcie_gen1 (0, 0, 0, 0, 0, 0, 1, 0, 0);
-  
-      Xil_Out32(SERDES_L0_PLL_FBDIV_FRAC_3_MSB,temp_pll_fbdiv_frac_3_msb_offset);
-      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
-      Xil_Out32(SERDES_L0_TM_IQ_ILL1,temp_TM_IQ_ILL1);
-      Xil_Out32(SERDES_L0_TX_DIG_TM_61, temp_tx_dig_tm_61);
-      Xil_Out32(SERDES_L0_TM_DIG_6, temp_tm_dig_6);
-      Xil_Out32(SERDES_L0_TM_E_ILL2, Xil_In32(SERDES_L0_TM_E_ILL1));
-      temp_ill12 = temp_ill12 | (Xil_In32(SERDES_L0_TM_ILL12)>>4 & 0xF);
-      Xil_Out32(SERDES_L0_TM_ILL12, temp_ill12);
-      Xil_Out32(SERDES_L0_TM_E_ILL1, temp_TM_E_ILL1);
-    }
-    if (lane1_protocol == 2)
-    {
-      temp_pll_fbdiv_frac_3_msb_offset=Xil_In32(SERDES_L1_PLL_FBDIV_FRAC_3_MSB);
-      Xil_Out32(SERDES_L1_PLL_FBDIV_FRAC_3_MSB,0x0);
-      temp_PLL_REF_SEL_OFFSET = Xil_In32(SERDES_PLL_REF_SEL1_OFFSET);
-      PSU_Mask_Write(SERDES_PLL_REF_SEL1_OFFSET, 0x0000001FU, 0x0000000DU);
-      temp_TM_IQ_ILL1 = Xil_In32(SERDES_L1_TM_IQ_ILL1);
-      temp_TM_E_ILL1 = Xil_In32(SERDES_L1_TM_E_ILL1);
-      Xil_Out32(SERDES_L1_TM_IQ_ILL1,0x78);
-      temp_tx_dig_tm_61 = Xil_In32(SERDES_L1_TX_DIG_TM_61);
-      temp_tm_dig_6 = Xil_In32(SERDES_L1_TM_DIG_6);
-      PSU_Mask_Write(SERDES_L1_TX_DIG_TM_61, 0x0000000BU, 0x00000000U);
-      PSU_Mask_Write(SERDES_L1_TM_DIG_6, 0x0000000FU, 0x00000000U);
-      temp_ill12 = Xil_In32(SERDES_L1_TM_ILL12) & 0xF0;
-  
-      serdes_illcalib_pcie_gen1 (0, 0, 0, 0, 1, 0, 0, 0, 0);
-  
-      Xil_Out32(SERDES_L1_PLL_FBDIV_FRAC_3_MSB,temp_pll_fbdiv_frac_3_msb_offset);
-      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
-      Xil_Out32(SERDES_L1_TM_IQ_ILL1,temp_TM_IQ_ILL1);
-      Xil_Out32(SERDES_L1_TX_DIG_TM_61, temp_tx_dig_tm_61);
-      Xil_Out32(SERDES_L1_TM_DIG_6, temp_tm_dig_6);
-      Xil_Out32(SERDES_L1_TM_E_ILL2, Xil_In32(SERDES_L1_TM_E_ILL1));
-      temp_ill12 = temp_ill12 | (Xil_In32(SERDES_L1_TM_ILL12)>>4 & 0xF);
-      Xil_Out32(SERDES_L1_TM_ILL12, temp_ill12);
-      Xil_Out32(SERDES_L1_TM_E_ILL1, temp_TM_E_ILL1);
-    }
-    if (lane2_protocol == 2)
-    {
-      temp_pll_fbdiv_frac_3_msb_offset=Xil_In32(SERDES_L2_PLL_FBDIV_FRAC_3_MSB);
-      Xil_Out32(SERDES_L2_PLL_FBDIV_FRAC_3_MSB,0x0);
-      temp_PLL_REF_SEL_OFFSET = Xil_In32(SERDES_PLL_REF_SEL2_OFFSET);
-      PSU_Mask_Write(SERDES_PLL_REF_SEL2_OFFSET, 0x0000001FU, 0x0000000DU);
-      temp_TM_IQ_ILL1 = Xil_In32(SERDES_L2_TM_IQ_ILL1);
-      temp_TM_E_ILL1 = Xil_In32(SERDES_L2_TM_E_ILL1);
-      Xil_Out32(SERDES_L2_TM_IQ_ILL1,0x78);
-      temp_tx_dig_tm_61 = Xil_In32(SERDES_L2_TX_DIG_TM_61);
-      temp_tm_dig_6 = Xil_In32(SERDES_L2_TM_DIG_6);
-      PSU_Mask_Write(SERDES_L2_TX_DIG_TM_61, 0x0000000BU, 0x00000000U);
-      PSU_Mask_Write(SERDES_L2_TM_DIG_6, 0x0000000FU, 0x00000000U);
-      temp_ill12 = Xil_In32(SERDES_L2_TM_ILL12) & 0xF0;
-  
-      serdes_illcalib_pcie_gen1 (0, 0, 1, 0, 0, 0, 0, 0, 0);
-  
-      Xil_Out32(SERDES_L2_PLL_FBDIV_FRAC_3_MSB,temp_pll_fbdiv_frac_3_msb_offset);
-      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
-      Xil_Out32(SERDES_L2_TM_IQ_ILL1,temp_TM_IQ_ILL1);
-      Xil_Out32(SERDES_L2_TX_DIG_TM_61, temp_tx_dig_tm_61);
-      Xil_Out32(SERDES_L2_TM_DIG_6, temp_tm_dig_6);
-      Xil_Out32(SERDES_L2_TM_E_ILL2, Xil_In32(SERDES_L2_TM_E_ILL1));
-      temp_ill12 = temp_ill12 | (Xil_In32(SERDES_L2_TM_ILL12)>>4 & 0xF);
-      Xil_Out32(SERDES_L2_TM_ILL12, temp_ill12);
-      Xil_Out32(SERDES_L2_TM_E_ILL1, temp_TM_E_ILL1);
-    }
-    if (lane3_protocol == 2)
-    {
-      temp_pll_fbdiv_frac_3_msb_offset=Xil_In32(SERDES_L3_PLL_FBDIV_FRAC_3_MSB);
-      Xil_Out32(SERDES_L3_PLL_FBDIV_FRAC_3_MSB,0x0);
-      temp_PLL_REF_SEL_OFFSET = Xil_In32(SERDES_PLL_REF_SEL3_OFFSET);
-      PSU_Mask_Write(SERDES_PLL_REF_SEL3_OFFSET, 0x0000001FU, 0x0000000DU);
-      temp_TM_IQ_ILL1 = Xil_In32(SERDES_L3_TM_IQ_ILL1);
-      temp_TM_E_ILL1 = Xil_In32(SERDES_L3_TM_E_ILL1);
-      Xil_Out32(SERDES_L3_TM_IQ_ILL1,0x78);
-      temp_tx_dig_tm_61 = Xil_In32(SERDES_L3_TX_DIG_TM_61);
-      temp_tm_dig_6 = Xil_In32(SERDES_L3_TM_DIG_6);
-      PSU_Mask_Write(SERDES_L3_TX_DIG_TM_61, 0x0000000BU, 0x00000000U);
-      PSU_Mask_Write(SERDES_L3_TM_DIG_6, 0x0000000FU, 0x00000000U);
-      temp_ill12 = Xil_In32(SERDES_L3_TM_ILL12) & 0xF0;
-  
-      serdes_illcalib_pcie_gen1 (1, 0, 0, 0, 0, 0, 0, 0, 0);
-  
-      Xil_Out32(SERDES_L3_PLL_FBDIV_FRAC_3_MSB,temp_pll_fbdiv_frac_3_msb_offset);
-      Xil_Out32(SERDES_PLL_REF_SEL3_OFFSET, temp_PLL_REF_SEL_OFFSET);
-      Xil_Out32(SERDES_L3_TM_IQ_ILL1,temp_TM_IQ_ILL1);
-      Xil_Out32(SERDES_L3_TX_DIG_TM_61, temp_tx_dig_tm_61);
-      Xil_Out32(SERDES_L3_TM_DIG_6, temp_tm_dig_6);
-      Xil_Out32(SERDES_L3_TM_E_ILL2, Xil_In32(SERDES_L3_TM_E_ILL1));
-      temp_ill12 = temp_ill12 | (Xil_In32(SERDES_L3_TM_ILL12)>>4 & 0xF);
-      Xil_Out32(SERDES_L3_TM_ILL12, temp_ill12);
-      Xil_Out32(SERDES_L3_TM_E_ILL1, temp_TM_E_ILL1);
-    }
-    rdata  = Xil_In32(SERDES_UPHY_SPARE0);
-    rdata  = (rdata & 0xDF);
-    Xil_Out32(SERDES_UPHY_SPARE0,rdata);
-  }
-  
-  if ((lane0_protocol == 2)&&(lane0_rate == 3)) 
-  {
-    PSU_Mask_Write(SERDES_L0_TM_ILL11, 0x000000F0U, 0x00000020U);
-    PSU_Mask_Write(SERDES_L0_TM_E_ILL3, 0x000000FFU, 0x00000094U);
-  }
-  if ((lane1_protocol == 2)&&(lane1_rate == 3)) 
-  {
-    PSU_Mask_Write(SERDES_L1_TM_ILL11, 0x000000F0U, 0x00000020U);
-    PSU_Mask_Write(SERDES_L1_TM_E_ILL3, 0x000000FFU, 0x00000094U);
-  }
-  if ((lane2_protocol == 2)&&(lane2_rate == 3)) 
-  {
-    PSU_Mask_Write(SERDES_L2_TM_ILL11, 0x000000F0U, 0x00000020U);
-    PSU_Mask_Write(SERDES_L2_TM_E_ILL3, 0x000000FFU, 0x00000094U);
-  }
-  if ((lane3_protocol == 2)&&(lane3_rate == 3)) 
-  {
-    PSU_Mask_Write(SERDES_L3_TM_ILL11, 0x000000F0U, 0x00000020U);
-    PSU_Mask_Write(SERDES_L3_TM_E_ILL3, 0x000000FFU, 0x00000094U);
-  }
 
+#ifdef XFSBL_DEBUG
+  Xil_Out32(0xFFFF0090,0xABCD);
+#endif
   //PCIe settings
   //If lane-0 is PCIe, we need to run pcie dynamic search on all active pcie lanes 
   //and reset sequence on all active lanes
   if (lane0_protocol == 1)
   {
-   if (lane0_rate == 0) 
-   {
-     serdes_illcalib_pcie_gen1 (lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, 0, 0);
-   }
-   else 
-   {
-     serdes_illcalib_pcie_gen1 (lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, 0, 0);
-     serdes_illcalib_pcie_gen1 (lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, lane0_rate, 1);
-   }
+     //Gen2 with Loopgain 0xF2 -- worstcase startup issue
+     if (lane0_protocol == 1) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF2);
+     if (lane1_protocol == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF2);
+     if (lane2_protocol == 1) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF2);
+     if (lane3_protocol == 1) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF2);
+     retval = serdes_illcalib_pcie_gen1 (0, lane3_protocol, 1, lane2_protocol, 1, lane1_protocol, 1, lane0_protocol, 1, 1);
+     if (lane0_protocol == 1) lockrange_gen2_bad[0] = (retval&0x1);
+     if (lane1_protocol == 1) lockrange_gen2_bad[1] = (retval&0x2)>>1;
+     if (lane2_protocol == 1) lockrange_gen2_bad[2] = (retval&0x4)>>2;
+     if (lane3_protocol == 1) lockrange_gen2_bad[3] = (retval&0x8)>>3;
+#ifdef XFSBL_DEBUG
+     Xil_Out32(0xFFFF008C,retval);
+#endif
+
+     //Gen1 with Loopgain 0xF7 -- worstcase Lockrange issue
+     if (lane0_protocol == 1) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF7);
+     if (lane1_protocol == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF7);
+     if (lane2_protocol == 1) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF7);
+     if (lane3_protocol == 1) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF7);
+     retval = serdes_illcalib_pcie_gen1 (0, lane3_protocol, 0, lane2_protocol, 0, lane1_protocol, 0, lane0_protocol, 0, 0);
+     if (lane0_protocol == 1) lockrange_gen1_bad[0] = (retval&0x1);
+     if (lane1_protocol == 1) lockrange_gen1_bad[1] = (retval&0x2)>>1;
+     if (lane2_protocol == 1) lockrange_gen1_bad[2] = (retval&0x4)>>2;
+     if (lane3_protocol == 1) lockrange_gen1_bad[3] = (retval&0x8)>>3;
+#ifdef XFSBL_DEBUG
+     Xil_Out32(0xFFFF0088,retval);
+#endif
+
+     boot_temp_gt_25 = (Xil_In32(0xFFA50800) > 0x981c);  
+#ifdef XFSBL_DEBUG
+     Xil_Out32(0xFFFF0090,boot_temp_gt_25);
+#endif
+
+     for (loop=0; loop<4; loop++) 
+     {
+       if ((lockrange_gen2_bad[loop] == 1)) 
+       {
+         if (loop == 0) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF7); //Use high loopgain to avoid startup issue
+         if (loop == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF7); //Use high loopgain to avoid startup issue
+         if (loop == 2) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF7); //Use high loopgain to avoid startup issue
+         if (loop == 3) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF7); //Use high loopgain to avoid startup issue
+       }
+       else if ((lockrange_gen1_bad[loop] == 1)) 
+       {
+         if (loop == 0) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 2) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 3) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+       }
+       else if ((boot_temp_gt_25 == 0))
+       {
+         if (loop == 0) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 2) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+         if (loop == 3) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF3); //Use high loopgain to avoid startup issue
+       }
+       else 
+       {
+         if (loop == 0) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0x16); //Use high loopgain to avoid startup issue
+         if (loop == 1) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0x16); //Use high loopgain to avoid startup issue
+         if (loop == 2) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0x16); //Use high loopgain to avoid startup issue
+         if (loop == 3) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0x16); //Use high loopgain to avoid startup issue
+       }
+     }
+#ifdef XFSBL_DEBUG
+     Xil_Out32(0xFFFF00A0, Xil_In32(SERDES_L0_TM_IQ_ILL8));
+     Xil_Out32(0xFFFF00A4, Xil_In32(SERDES_L1_TM_IQ_ILL8));
+     Xil_Out32(0xFFFF00A8, Xil_In32(SERDES_L2_TM_IQ_ILL8));
+     Xil_Out32(0xFFFF00AC, Xil_In32(SERDES_L3_TM_IQ_ILL8));
+#endif
+     serdes_illcalib_pcie_gen1 (0, lane3_protocol, 0, lane2_protocol, 0, lane1_protocol, 0, lane0_protocol, 0, 0);
+     if (lane0_rate == 1) 
+     {
+       serdes_illcalib_pcie_gen1 (0, lane3_protocol, lane3_rate, lane2_protocol, lane2_rate, lane1_protocol, lane1_rate, lane0_protocol, lane0_rate, 1); 
+     }
+     if (Xil_In32(0xFFFF0088) != 0xDEADBEEF)
+	Xil_Out32(0XFD40D978, Xil_In32(0xFFFF0010));
   }
 
-  //USB3 settings
-  if (lane0_protocol == 3) Xil_Out32(SERDES_L0_TM_IQ_ILL8,0xF3);
-  if (lane0_protocol == 3) Xil_Out32(SERDES_L0_TM_E_ILL8,0xF3);
-  if (lane0_protocol == 3) Xil_Out32(SERDES_L0_TM_ILL12,0x20);
-  if (lane0_protocol == 3) Xil_Out32(SERDES_L0_TM_E_ILL1,0x37);
-
-  if (lane1_protocol == 3) Xil_Out32(SERDES_L1_TM_IQ_ILL8,0xF3);
-  if (lane1_protocol == 3) Xil_Out32(SERDES_L1_TM_E_ILL8,0xF3);
-  if (lane1_protocol == 3) Xil_Out32(SERDES_L1_TM_ILL12,0x20);
-  if (lane1_protocol == 3) Xil_Out32(SERDES_L1_TM_E_ILL1,0x37);
-
-  if (lane2_protocol == 3) Xil_Out32(SERDES_L2_TM_IQ_ILL8,0xF3);
-  if (lane2_protocol == 3) Xil_Out32(SERDES_L2_TM_E_ILL8,0xF3);
-  if (lane2_protocol == 3) Xil_Out32(SERDES_L2_TM_ILL12,0x20);
-  if (lane2_protocol == 3) Xil_Out32(SERDES_L2_TM_E_ILL1,0x37);
-
-  if (lane3_protocol == 3) Xil_Out32(SERDES_L3_TM_IQ_ILL8,0xF3);
-  if (lane3_protocol == 3) Xil_Out32(SERDES_L3_TM_E_ILL8,0xF3);
-  if (lane3_protocol == 3) Xil_Out32(SERDES_L3_TM_ILL12,0x20);
-  if (lane3_protocol == 3) Xil_Out32(SERDES_L3_TM_E_ILL1,0x37);
 
   return 1;
 }
 
-
-//Kishore -- ILL calibration code ends
+//ILL calibration code ends
 
 /*Following SERDES programming sequences that a user need to follow to work
  * around the known limitation with SERDES. These sequences should done

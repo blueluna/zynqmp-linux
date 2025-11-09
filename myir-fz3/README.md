@@ -1,5 +1,24 @@
 # Myir FZ3
 
+## Overview
+
+Currently supported,
+
+ - [x] PMUFW
+ - [x] PSU init
+ - [x] U-Boot SPL
+ - [x] U-Boot 
+ - [x] Linux Kernel
+ - [x] Debian
+ - [x] SD-card
+ - [x] Ethernet
+ - [x] eMMC
+ - [x] QSPI flash
+ - [x] DisplayPort Video
+ - [ ] DisplayPort Audio
+ - [x] Lima GPU
+ - [x] PL
+
 ## eMMC
 
 ### Linux file system
