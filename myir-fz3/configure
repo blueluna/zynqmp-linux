@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -eu
+
+if [ $# -ne 1 ]; then
+        echo "${0} <dtbo file path>"
+        exit 1
+fi
+
+firmware_dir=/lib/firmware
+firmware_name=top_wrapper.bin
+firmware_path=${firmware_dir}/${firmware_name}
+
+if [ ! -d ${firmware_dir} ]; then
+        mkdir -p ${firmware_dir}
+fi
+
+if [ -f ${firmware_name} ]; then
+        cp -f ${firmware_name} ${firmware_path}
+fi
+
+if [ ! -f ${firmware_path} ]; then
+        echo "No firmware ${firmware_path} installed"
+        exit 1;
+fi
+
+dtbocfg_dir=/sys/kernel/config/device-tree/overlays
+
+if [ ! -d ${dtbocfg_dir} ]; then
+        modprobe dtbocfg
+fi
+
+if [ ! -d ${dtbocfg_dir} ]; then
+        echo "No device tree configuration interface ${dtbocfg_dir}"
+        exit 1
+fi
+
+dtbocfg_pl=${dtbocfg_dir}/pl
+dtbocfg_pl_dtbo=${dtbocfg_pl}/dtbo
+dtbocfg_pl_status=${dtbocfg_pl}/status
+
+if [ -d ${dtbocfg_pl} ]; then
+        echo "Remove old device-tree overlay"
+        echo "0" > ${dtbocfg_pl_status}
+        rmdir ${dtbocfg_pl}
+fi
+
+if [ -d ${dtbocfg_pl} ]; then
+        exit 1
+fi
+
+mkdir -p ${dtbocfg_pl}
+cat ${1} > ${dtbocfg_pl_dtbo}
+echo "1" > ${dtbocfg_pl_status}
+
+exit 0

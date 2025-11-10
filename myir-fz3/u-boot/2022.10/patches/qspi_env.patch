@@ -1,0 +1,13 @@
+Index: u-boot-2022.10/board/xilinx/zynqmp/zynqmp.c
+===================================================================
+--- u-boot-2022.10.orig/board/xilinx/zynqmp/zynqmp.c
++++ u-boot-2022.10/board/xilinx/zynqmp/zynqmp.c
+@@ -612,6 +612,8 @@ enum env_location env_get_location(enum
+ 			return ENVL_FAT;
+ 		if (IS_ENABLED(CONFIG_ENV_IS_IN_EXT4))
+ 			return ENVL_EXT4;
++		if (IS_ENABLED(CONFIG_ENV_IS_IN_SPI_FLASH))
++			return ENVL_SPI_FLASH;
+ 		return ENVL_NOWHERE;
+ 	case NAND_MODE:
+ 		if (IS_ENABLED(CONFIG_ENV_IS_IN_NAND))

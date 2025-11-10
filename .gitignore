@@ -1,4 +1,8 @@
+arm-gnu-*/
 gcc-arm-*/
 downloads/
 output/
 rootfs/
+*.log
+.linked
+*.dtbo

@@ -1,0 +1,394 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * dts file for MYiR FZ3
+ *
+ * Author: Erik Banvik <erik.public@gmail.com>
+ */
+
+/dts-v1/;
+
+#include "zynqmp.dtsi"
+#include "zynqmp-clk-ccf.dtsi"
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/pinctrl-zynqmp.h>
+#include <dt-bindings/phy/phy.h>
+
+/ {
+	model = "MYiR FZ3";
+	compatible = "xlnx,zynqmp-myir-fz3", "xlnx,zynqmp";
+
+	aliases {
+		ethernet0 = &gem3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		rtc0 = &rtc;
+		serial0 = &uart0;
+		spi0 = &qspi;
+		usb0 = &usb0;
+	};
+
+	chosen {
+		bootargs = "earlycon clk_ignore_unused console=ttyPS0,115200 cpuidle.off=1";
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x7ff00000>, <0x00000008 0x00000000 0x0 0x80000000>;
+	};
+
+   refclk0:psgtr_pcie_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <100000000>;
+   };
+
+	refclk1:psgtr_usb_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <26000000>;
+   };
+	
+	refclk2:psgtr_dp_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <27000000>;
+	};
+	/*
+	watchdog-gpio {
+		compatible = "linux,wdt-gpio";
+		gpios = <&gpio 41 GPIO_ACTIVE_LOW>;
+		hw_algo = "toggle";
+		hw_margin_ms = <1500>;
+		always-running;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_watchdog_default>;
+		status = "okay";
+	};
+	*/
+	dpcon {
+		compatible = "dp-connector";
+		label = "P11";
+		type = "full-size";
+
+		port {
+			dpcon_in: endpoint {
+				remote-endpoint = <&dpsub_dp_out>;
+			};
+		};
+	};
+};
+
+&fpd_dma_chan1 {
+	status = "okay";
+};
+
+&fpd_dma_chan2 {
+	status = "okay";
+};
+
+&fpd_dma_chan3 {
+	status = "okay";
+};
+
+&fpd_dma_chan4 {
+	status = "okay";
+};
+
+&fpd_dma_chan5 {
+	status = "okay";
+};
+
+&fpd_dma_chan6 {
+	status = "okay";
+};
+
+&fpd_dma_chan7 {
+	status = "okay";
+};
+
+&fpd_dma_chan8 {
+	status = "okay";
+};
+
+&gem3 {
+	status = "okay";
+	phy-mode = "rgmii-id";
+	local-mac-address = [02 0a 35 00 22 01];
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gem3_default>;
+	mdio: mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy0: ethernet-phy@4 {
+			#phy-cells = <1>;
+			reg = <0x4>;
+		};
+	};
+};
+
+&gpio {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c0_default>;
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-names = "default";	
+	pinctrl-0 = <&pinctrl_i2c1_default>;
+
+	eeprom@51 {
+		compatible = "atmel,24c256";
+		reg = <0x51>;
+		pagesize = <64>;
+		address-width = <16>;
+	};
+};
+
+&pinctrl0 {
+	status = "okay";
+	pinctrl_uart0_default: uart0-default {
+		mux {
+			groups = "uart0_8_grp";
+			function = "uart0";
+		};
+
+		conf {
+			groups = "uart0_8_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+	};
+
+	pinctrl_sdhci0_default: sdhci0-default {
+		mux {
+			groups = "sdio0_0_grp";
+			function = "sdio0";
+		};
+
+		conf {
+			groups = "sdio0_0_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+			bias-disable;
+		};
+	};
+
+	pinctrl_sdhci1_default: sdhci1-default {
+		mux {
+			groups = "sdio1_2_grp";
+			function = "sdio1";
+		};
+
+		conf {
+			groups = "sdio1_2_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+			bias-disable;
+		};
+
+		mux-cd {
+			groups = "sdio1_cd_0_grp";
+			function = "sdio1_cd";
+		};
+
+		conf-cd {
+			groups = "sdio1_cd_0_grp";
+			bias-high-impedance;
+			bias-pull-up;
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+	};
+
+	pinctrl_gem3_default: gem3-default {
+		mux {
+			function = "ethernet3";
+			groups = "ethernet3_0_grp";
+		};
+
+		mux-mdio {
+			function = "mdio3";
+			groups = "mdio3_0_grp";
+		};
+	};
+
+	pinctrl_i2c0_default: i2c0-default {
+		mux {
+			groups = "i2c0_10_grp";
+			function = "i2c0";
+		};
+	};
+
+	pinctrl_i2c1_default: i2c1-default {
+		mux {
+			groups = "i2c1_8_grp";
+			function = "i2c1";
+		};
+	};
+
+	pinctrl_watchdog_default: watchdog-default {
+		mux {
+			function = "gpio0";
+			groups = "gpio0_41_grp";
+		};
+
+		conf {
+			groups = "gpio0_41_grp";
+			slew-rate = <SLEW_RATE_SLOW>;
+			power-source = <IO_STANDARD_LVCMOS18>;
+		};
+
+		conf-pull-none {
+			pins = "MIO41";
+			bias-disable;
+		};
+	};
+};
+
+&pcie {
+	status = "okay";
+	xlnx,tz-nonsecure = <0x00>;
+};
+
+&psgtr {
+	status = "okay";
+	clocks = <&refclk0 &refclk1 &refclk2>;
+	clock-names = "ref0\0ref1\0ref2";
+};
+
+&qspi {
+	status = "okay";
+	compatible = "xlnx,zynqmp-qspi-1.0";
+	is-dual = <0>;
+	flash@0 {
+		compatible = "m25p80", "n25q256a", "jedec,spi-nor";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		reg = <0x0>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>; 
+		spi-max-frequency = <108000000>; 
+		// QSPI flash, 32Mb
+		partition@fsbl { 
+			// first stage boot loader, u-boot-spl, 1Mb
+			label = "fsbl";
+			reg = <0x0000000 0x0100000>;
+		};
+		partition@ssbl_config { 
+			// second stage boot loader configuration, 1Mb
+			label = "ssbl_config";
+			reg = <0x0100000 0x0100000>;
+		};
+		partition@ssbl { 
+			// second stage boot loader, u-boot, 4Mb
+			label = "ssbl";
+			reg = <0x0200000 0x0400000>;
+		};
+		partition@linux { 
+			// Linux kernel, 10Mb
+			label = "linux";
+			reg = <0x0600000 0x0a00000>;
+		};
+		// Data, 16Mb
+		partition@data { 
+			label = "data";
+			reg = <0x1000000 0x1000000>;
+		};
+	};
+};
+
+&rtc {
+	status = "okay";
+};
+
+&sdhci0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sdhci0_default>;
+	clock-frequency = <187500000>;
+	xlnx,mio-bank = <0>;
+	no-1-8-v;
+	non-removable;
+	disable-wp;
+};
+
+&sdhci1 {
+	status = "okay";
+	pinctrl-names = "default";
+	clock-frequency = <187500000>;
+	pinctrl-0 = <&pinctrl_sdhci1_default>;
+	xlnx,mio-bank = <1>;
+	no-1-8-v;
+	bus-width = <4>;
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart0_default>;
+};
+
+&usb0 {
+	status = "okay";
+	xlnx,tz-nonsecure = <0x01>;
+	xlnx,usb-polarity = <0x00>;
+	xlnx,usb-reset-mode = <0x00>;
+};
+
+&dwc3_0 {
+	status = "okay";
+	dr_mode = "host";
+	snps,usb3_lpm_capable;
+	maximum-speed = "super-speed";
+};
+
+&watchdog0 {
+	status = "okay";
+};
+
+&xilinx_ams {
+	status = "okay";
+};
+
+&ams_ps {
+	status = "okay";
+};
+
+&ams_pl {
+	status = "okay";
+};
+
+&zynqmp_dpdma {
+	status = "okay";
+};
+
+&zynqmp_dpsub {
+	status = "okay";
+	phy-names = "dp-phy0", "dp-phy1";
+	/*             DMA, type? ? clock reference */
+	phys = <&psgtr 3 PHY_TYPE_DP 0 2>,
+	       <&psgtr 2 PHY_TYPE_DP 1 2>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		
+		port@5 {
+			reg = <5>;
+			dpsub_dp_out: endpoint {
+				remote-endpoint = <&dpcon_in>;
+			};
+		};
+	};
+};
+
+&gpu {
+	status = "okay";
+};

@@ -1,16 +1,18 @@
 # SPDX-License-Identifier: MIT
-# Bootloader for TE0802-02
+# Bootloader for ZynqMP
 #
 # Author: Erik Banvik <erik.public@gmail.com>
 
 include ../constants.makefile
+
+board_dir_u_boot=$(board_dir)/u-boot
 
 embeddedsw_dir=embeddedsw-xilinx_$(xilinx_version)
 embeddedsw_url=https://github.com/Xilinx/embeddedsw/archive/refs/tags/xilinx_$(xilinx_version).tar.gz
 embeddedsw_archive=$(embeddedsw_dir).tar.gz
 embeddedsw_sources=$(embeddedsw_dir)/.sources
 
-pmufw=pmufw-v2022.2.bin
+pmufw=pmufw-v2025.1.bin
 pmufw_url=https://github.com/lucaceresoli/zynqmp-pmufw-binaries/raw/master/bin/$(pmufw)
 
 pmu_obj_obj=pm_cfg_obj.o
@@ -29,25 +31,20 @@ u_boot_archive=$(u_boot_dir).tar.bz2
 u_boot_url=https://ftp.denx.de/pub/u-boot/$(u_boot_archive)
 u_boot_unpacked=$(u_boot_dir)/Makefile
 u_boot_patches_dir=$(u_boot_dir)/patches
-u_boot_patches_linked=$(u_boot_patches_dir)/.linked
+u_boot_patches_linked=$(u_boot_dir)/.patches_linked
 u_boot_patched=$(u_boot_dir)/.patched
 u_boot_built=$(u_boot_dir)/.built
-u_boot_defconfig=te0802_02_defconfig
-u_boot_defconfig_src=te0802_02_defconfig
-u_boot_defconfig_dst=$(u_boot_dir)/configs/$(u_boot_defconfig)
-
-board_name=zynqmp-te0802-02
+u_boot_defconfig_src=$(board_dir_u_boot)/$(u_boot_version)/$(kernel_configuration_name)
+u_boot_defconfig_dst=$(u_boot_dir)/configs/$(kernel_configuration_name)
 
 dts_dir=$(u_boot_dir)/arch/arm/dts
 dts_destination=$(dts_dir)/$(device_tree_source)
 
-xsa_dir=xsa
-psu_init_file=psu_init_gpl
-psu_init_header=$(xsa_dir)/$(psu_init_file).h
-psu_init_source=$(xsa_dir)/$(psu_init_file).c
-psu_init_installed=$(u_boot_board_dir)/$(psu_init_file).c
-
 u_boot_board_dir=$(u_boot_dir)/board/xilinx/zynqmp/$(board_name)
+
+psu_init_file=psu_init_gpl
+psu_init_source=$(board_dir_u_boot)/$(psu_init_file).c
+psu_init_installed=$(u_boot_board_dir)/$(psu_init_file).c
 
 u_boot_current_config=$(u_boot_dir)/.config
 
@@ -57,91 +54,84 @@ u_boot_spl_image_output=$(output_dir)/$(u_boot_spl_image)
 u_boot_image=u-boot.itb
 u_boot_image_output=$(output_dir)/$(u_boot_image)
 
-device_tree_output=$(output_dir)/$(device_tree_binary)
-
-all: $(u_boot_spl_image_output) $(u_boot_image_output) $(device_tree_output)
+all: $(u_boot_spl_image_output) $(u_boot_image_output)
 
 .PHONY: clean
 
 include ../common.makefile
 
 $(embeddedsw_archive):
-	curl -JLO $(embeddedsw_url)
+	$(Q)curl -JLO $(embeddedsw_url)
 
 $(embeddedsw_sources): $(embeddedsw_archive)
-	tar -xf $<
-	touch $@
+	$(Q)tar -xf $<
+	$(Q)touch $@
 
-$(pmu_obj): $(embeddedsw_sources) $(pmu_obj_src) $(aarch64_linux_marker)
-	$(aarch64_linux_gcc) -c $(pmu_obj_src) \
+$(pmu_obj): $(embeddedsw_sources) $(board_dir_u_boot)/$(pmu_obj_src) $(aarch64_linux_marker)
+	$(Q)$(aarch64_linux_gcc) -c $(board_dir_u_boot)/$(pmu_obj_src) \
 		-I $(embeddedsw_dir)/lib/bsp/standalone/src/common/ \
-		-I $(embeddedsw_dir)/lib/sw_services/xilpm/src/zynqmp/client/common/
-	$(aarch64_linux_cross)objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
+		-I $(embeddedsw_dir)/lib/sw_services/xilpm/src/zynqmp/client/common/ \
+		-I .
+	$(Q)$(aarch64_linux_cross)objcopy -O binary $(pmu_obj_obj) $(pmu_obj)
 
 $(pmufw):
 #	curl -JLO $(pmufw_url)
 
 $(atf_archive):
-	curl -JLO $(atf_url)
+	$(Q)curl -JLO $(atf_url)
 
 $(atf_makefile): $(atf_archive)
-	tar -xf $<
+	$(Q)tar -xf $<
 
 $(atf_bin): $(atf_makefile) $(aarch64_none_marker)
-	$(MAKE) -C $(atf_dir) CROSS_COMPILE=$(aarch64_none_cross) PLAT=zynqmp RESET_TO_BL31=1 bl31
+	$(Q)$(MAKE) -C $(atf_dir) CROSS_COMPILE=$(aarch64_none_cross) PLAT=zynqmp RESET_TO_BL31=1 bl31
 
 $(dts_destination): $(u_boot_unpacked) $(device_tree_source_path)
-	cp $(device_tree_source_path) $(dts_destination)
-
-$(psu_init_source): $(xsa_source)
-	unzip -u -x $(xsa_source) -d $(xsa_dir)
-	cd $(xsa_dir); patch -p 1 < ../$(psu_init_file).c.patch
-
-$(psu_init_header): $(psu_init_source)
+	$(Q)cp $(device_tree_source_path) $(dts_destination)
 
 $(u_boot_board_dir): $(u_boot_unpacked)
-	mkdir -p $@
+	$(Q)mkdir -p $@
 
-$(psu_init_installed): $(psu_init_header) $(psu_init_source) $(u_boot_board_dir)
-	cp $(psu_init_header) $(psu_init_source) $(u_boot_board_dir)
+$(psu_init_installed): $(psu_init_source) $(u_boot_board_dir)
+	$(Q)cp $(psu_init_source) $(u_boot_board_dir)
 
 $(u_boot_archive):
-	curl -JLO $(u_boot_url)
+	$(Q)curl -JLO $(u_boot_url)
 
 $(u_boot_unpacked): $(u_boot_archive)
-	tar -xf $<
-	touch $@
+	$(Q)tar -xf $<
+	$(Q)touch $@
 
 $(u_boot_patches_linked): $(u_boot_unpacked)
-	ln -s ../patches $(u_boot_patches_dir)
-	touch $@
+	$(Q)ln -s $(board_dir_u_boot)/$(u_boot_version)/patches $(u_boot_patches_dir)
+	$(Q)touch $@
 
 $(u_boot_patched): $(u_boot_patches_linked)
-	cd $(u_boot_dir); quilt push -a
-	touch $@
+	$(Q)cd $(u_boot_dir); quilt push -q -a
+	$(Q)touch $@
 
 $(u_boot_defconfig_dst): $(u_boot_defconfig_src)
-	cp $(u_boot_defconfig_src) $(u_boot_defconfig_dst)
+	$(Q)cp $(u_boot_defconfig_src) $(u_boot_defconfig_dst)
 
 $(u_boot_current_config): $(u_boot_patched) $(aarch64_linux_marker) $(u_boot_defconfig_dst)
-	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) $(u_boot_defconfig)
-	cd $(u_boot_dir); ./scripts/config --set-str PMUFW_INIT_FILE "$(abspath $(pmufw))"
-	cd $(u_boot_dir); ./scripts/config --set-str ZYNQMP_SPL_PM_CFG_OBJ_FILE "$(abspath $(pmu_obj))"
-	CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
+	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) $(kernel_configuration_name)
+	$(Q)cd $(u_boot_dir); ./scripts/config --set-str PMUFW_INIT_FILE "$(abspath $(pmufw))"
+	$(Q)cd $(u_boot_dir); ./scripts/config --set-str ZYNQMP_SPL_PM_CFG_OBJ_FILE "$(abspath $(pmu_obj))"
+	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) oldconfig
 
 $(u_boot_built): $(u_boot_patched) $(pmu_obj) $(pmufw) $(atf_bin) $(dts_destination) $(psu_init_installed) $(u_boot_current_config) $(aarch64_linux_marker)
-	BL31=$(abspath $(atf_bin)) CONFIG_PMUFW_INIT_FILE=../zynqmp-pmufw-builder/pmufw.bin CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
-	touch $@
+	$(Q)BL31=$(abspath $(atf_bin)) CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) -j$(num_jobs)
+	$(Q)touch $@
 
 $(u_boot_spl_image_output): $(u_boot_built) $(output_dir)
-	cp $(u_boot_dir)/spl/$(u_boot_spl_image) $(u_boot_spl_image_output)
+	$(Q)cp $(u_boot_dir)/spl/$(u_boot_spl_image) $(u_boot_spl_image_output)
 
 $(u_boot_image_output): $(u_boot_built) $(output_dir)
-	cp $(u_boot_dir)/$(u_boot_image) $(u_boot_image_output)
+	$(Q)cp $(u_boot_dir)/$(u_boot_image) $(u_boot_image_output)
 
-$(device_tree_output): $(u_boot_built) $(output_dir)
-	cp $(dts_dir)/$(device_tree_binary) $(device_tree_output)
+config: 
+	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) menuconfig
 
 clean:
-	rm -f $(pmu_obj) $(pmu_obj_obj) $(pmu_obj) $(atf_bin)
-	rm -rf $(atf_dir) $(embeddedsw_dir) $(u_boot_dir) $(xsa_dir)
+	$(Q)rm -f $(pmu_obj) $(pmu_obj_obj) $(pmu_obj) $(atf_bin)
+	$(Q)rm -rf $(atf_dir) $(embeddedsw_dir) $(u_boot_dir)
