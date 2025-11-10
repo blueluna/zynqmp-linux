@@ -8,10 +8,4 @@
 			resets = <&zynqmp_reset 116>;
 		};
 	};
-	fragment@1 {
-		target = <&zynqmp_dpsub>;
-		__overlay__ {
-	        status = "okay";
-		};
-	};
 };

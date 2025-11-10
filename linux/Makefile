@@ -77,8 +77,8 @@ $(mainline_linux_configured): $(mainline_dts_destination) $(aarch64_linux_marker
 	touch $@
 
 $(mainline_linux_built): $(mainline_linux_configured) $(aarch64_linux_marker)
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64
-	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules ARCH=arm64
+	DTC_FLAGS="-@" CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64
+	DTC_FLAGS="-@" CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules ARCH=arm64
 	touch $@
 
 $(dtbocfg_archive):
