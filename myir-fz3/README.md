@@ -15,7 +15,7 @@ Currently supported,
  - [x] eMMC
  - [x] QSPI flash
  - [x] DisplayPort Video
- - [ ] DisplayPort Audio
+ - [x] DisplayPort Audio
  - [x] Lima GPU
  - [x] PL
 

@@ -913,8 +913,6 @@
 #define CRL_APB_QSPI_REF_CTRL_OFFSET                                               0XFF5E0068
 #undef CRL_APB_SDIO0_REF_CTRL_OFFSET 
 #define CRL_APB_SDIO0_REF_CTRL_OFFSET                                              0XFF5E006C
-#undef CRL_APB_SDIO1_REF_CTRL_OFFSET 
-#define CRL_APB_SDIO1_REF_CTRL_OFFSET                                              0XFF5E0070
 #undef IOU_SLCR_SDIO_CLK_CTRL_OFFSET 
 #define IOU_SLCR_SDIO_CLK_CTRL_OFFSET                                              0XFF18030C
 #undef CRL_APB_UART0_REF_CTRL_OFFSET 
@@ -923,8 +921,6 @@
 #define CRL_APB_I2C0_REF_CTRL_OFFSET                                               0XFF5E0120
 #undef CRL_APB_I2C1_REF_CTRL_OFFSET 
 #define CRL_APB_I2C1_REF_CTRL_OFFSET                                               0XFF5E0124
-#undef CRL_APB_CAN0_REF_CTRL_OFFSET 
-#define CRL_APB_CAN0_REF_CTRL_OFFSET                                               0XFF5E0084
 #undef CRL_APB_CPU_R5_CTRL_OFFSET 
 #define CRL_APB_CPU_R5_CTRL_OFFSET                                                 0XFF5E0090
 #undef CRL_APB_IOU_SWITCH_CTRL_OFFSET 
@@ -941,16 +937,12 @@
 #define CRL_APB_ADMA_REF_CTRL_OFFSET                                               0XFF5E00B8
 #undef CRL_APB_PL0_REF_CTRL_OFFSET 
 #define CRL_APB_PL0_REF_CTRL_OFFSET                                                0XFF5E00C0
-#undef CRL_APB_PL1_REF_CTRL_OFFSET 
-#define CRL_APB_PL1_REF_CTRL_OFFSET                                                0XFF5E00C4
 #undef CRL_APB_AMS_REF_CTRL_OFFSET 
 #define CRL_APB_AMS_REF_CTRL_OFFSET                                                0XFF5E0108
 #undef CRL_APB_DLL_REF_CTRL_OFFSET 
 #define CRL_APB_DLL_REF_CTRL_OFFSET                                                0XFF5E0104
 #undef CRL_APB_TIMESTAMP_REF_CTRL_OFFSET 
 #define CRL_APB_TIMESTAMP_REF_CTRL_OFFSET                                          0XFF5E0128
-#undef CRF_APB_SATA_REF_CTRL_OFFSET 
-#define CRF_APB_SATA_REF_CTRL_OFFSET                                               0XFD1A00A0
 #undef CRF_APB_PCIE_REF_CTRL_OFFSET 
 #define CRF_APB_PCIE_REF_CTRL_OFFSET                                               0XFD1A00B4
 #undef CRF_APB_DP_VIDEO_REF_CTRL_OFFSET 
@@ -965,8 +957,6 @@
 #define CRF_APB_DBG_FPD_CTRL_OFFSET                                                0XFD1A0068
 #undef CRF_APB_DDR_CTRL_OFFSET 
 #define CRF_APB_DDR_CTRL_OFFSET                                                    0XFD1A0080
-#undef CRF_APB_GPU_REF_CTRL_OFFSET 
-#define CRF_APB_GPU_REF_CTRL_OFFSET                                                0XFD1A0084
 #undef CRF_APB_GDMA_REF_CTRL_OFFSET 
 #define CRF_APB_GDMA_REF_CTRL_OFFSET                                               0XFD1A00B8
 #undef CRF_APB_DPDMA_REF_CTRL_OFFSET 
@@ -1249,48 +1239,6 @@
 #define CRL_APB_SDIO0_REF_CTRL_SRCSEL_MASK                     0x00000007U
 
 /*
-* Clock active signal. Switch to 0 to disable the clock
-*/
-#undef CRL_APB_SDIO1_REF_CTRL_CLKACT_DEFVAL 
-#undef CRL_APB_SDIO1_REF_CTRL_CLKACT_SHIFT 
-#undef CRL_APB_SDIO1_REF_CTRL_CLKACT_MASK 
-#define CRL_APB_SDIO1_REF_CTRL_CLKACT_DEFVAL                   0x01000F00
-#define CRL_APB_SDIO1_REF_CTRL_CLKACT_SHIFT                    24
-#define CRL_APB_SDIO1_REF_CTRL_CLKACT_MASK                     0x01000000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR1_DEFVAL 
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR1_SHIFT 
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR1_MASK 
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR1_DEFVAL                 0x01000F00
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR1_SHIFT                  16
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR1_MASK                   0x003F0000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR0_DEFVAL 
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR0_SHIFT 
-#undef CRL_APB_SDIO1_REF_CTRL_DIVISOR0_MASK 
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR0_DEFVAL                 0x01000F00
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR0_SHIFT                  8
-#define CRL_APB_SDIO1_REF_CTRL_DIVISOR0_MASK                   0x00003F00U
-
-/*
-* 000 = IOPLL; 010 = RPLL; 011 = VPLL; (This signal may only be toggled af
-    * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
-    *  usually an issue, but designers must be aware.)
-*/
-#undef CRL_APB_SDIO1_REF_CTRL_SRCSEL_DEFVAL 
-#undef CRL_APB_SDIO1_REF_CTRL_SRCSEL_SHIFT 
-#undef CRL_APB_SDIO1_REF_CTRL_SRCSEL_MASK 
-#define CRL_APB_SDIO1_REF_CTRL_SRCSEL_DEFVAL                   0x01000F00
-#define CRL_APB_SDIO1_REF_CTRL_SRCSEL_SHIFT                    0
-#define CRL_APB_SDIO1_REF_CTRL_SRCSEL_MASK                     0x00000007U
-
-/*
 * MIO pad selection for sdio0_rx_clk (feedback clock from the PAD) 00: MIO
     *  [22] 01: MIO [38] 10: MIO [64] 11: MIO [64]
 */
@@ -1300,17 +1248,6 @@
 #define IOU_SLCR_SDIO_CLK_CTRL_SDIO0_RX_SRC_SEL_DEFVAL         0x00000000
 #define IOU_SLCR_SDIO_CLK_CTRL_SDIO0_RX_SRC_SEL_SHIFT          0
 #define IOU_SLCR_SDIO_CLK_CTRL_SDIO0_RX_SRC_SEL_MASK           0x00000003U
-
-/*
-* MIO pad selection for sdio1_rx_clk (feedback clock from the PAD) 0: MIO
-    * [51] 1: MIO [76]
-*/
-#undef IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_DEFVAL 
-#undef IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_SHIFT 
-#undef IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_MASK 
-#define IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_DEFVAL         0x00000000
-#define IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_SHIFT          17
-#define IOU_SLCR_SDIO_CLK_CTRL_SDIO1_RX_SRC_SEL_MASK           0x00020000U
 
 /*
 * Clock active signal. Switch to 0 to disable the clock
@@ -1437,48 +1374,6 @@
 #define CRL_APB_I2C1_REF_CTRL_SRCSEL_DEFVAL                    0x01000500
 #define CRL_APB_I2C1_REF_CTRL_SRCSEL_SHIFT                     0
 #define CRL_APB_I2C1_REF_CTRL_SRCSEL_MASK                      0x00000007U
-
-/*
-* Clock active signal. Switch to 0 to disable the clock
-*/
-#undef CRL_APB_CAN0_REF_CTRL_CLKACT_DEFVAL 
-#undef CRL_APB_CAN0_REF_CTRL_CLKACT_SHIFT 
-#undef CRL_APB_CAN0_REF_CTRL_CLKACT_MASK 
-#define CRL_APB_CAN0_REF_CTRL_CLKACT_DEFVAL                    0x01001800
-#define CRL_APB_CAN0_REF_CTRL_CLKACT_SHIFT                     24
-#define CRL_APB_CAN0_REF_CTRL_CLKACT_MASK                      0x01000000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR1_DEFVAL 
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR1_SHIFT 
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR1_MASK 
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR1_DEFVAL                  0x01001800
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR1_SHIFT                   16
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR1_MASK                    0x003F0000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR0_DEFVAL 
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR0_SHIFT 
-#undef CRL_APB_CAN0_REF_CTRL_DIVISOR0_MASK 
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR0_DEFVAL                  0x01001800
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR0_SHIFT                   8
-#define CRL_APB_CAN0_REF_CTRL_DIVISOR0_MASK                    0x00003F00U
-
-/*
-* 000 = IOPLL; 010 = RPLL; 011 = DPLL; (This signal may only be toggled af
-    * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
-    *  usually an issue, but designers must be aware.)
-*/
-#undef CRL_APB_CAN0_REF_CTRL_SRCSEL_DEFVAL 
-#undef CRL_APB_CAN0_REF_CTRL_SRCSEL_SHIFT 
-#undef CRL_APB_CAN0_REF_CTRL_SRCSEL_MASK 
-#define CRL_APB_CAN0_REF_CTRL_SRCSEL_DEFVAL                    0x01001800
-#define CRL_APB_CAN0_REF_CTRL_SRCSEL_SHIFT                     0
-#define CRL_APB_CAN0_REF_CTRL_SRCSEL_MASK                      0x00000007U
 
 /*
 * Turing this off will shut down the OCM, some parts of the APM, and preve
@@ -1749,48 +1644,6 @@
 #define CRL_APB_PL0_REF_CTRL_SRCSEL_MASK                       0x00000007U
 
 /*
-* Clock active signal. Switch to 0 to disable the clock
-*/
-#undef CRL_APB_PL1_REF_CTRL_CLKACT_DEFVAL 
-#undef CRL_APB_PL1_REF_CTRL_CLKACT_SHIFT 
-#undef CRL_APB_PL1_REF_CTRL_CLKACT_MASK 
-#define CRL_APB_PL1_REF_CTRL_CLKACT_DEFVAL                     0x00052000
-#define CRL_APB_PL1_REF_CTRL_CLKACT_SHIFT                      24
-#define CRL_APB_PL1_REF_CTRL_CLKACT_MASK                       0x01000000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR1_DEFVAL 
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR1_SHIFT 
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR1_MASK 
-#define CRL_APB_PL1_REF_CTRL_DIVISOR1_DEFVAL                   0x00052000
-#define CRL_APB_PL1_REF_CTRL_DIVISOR1_SHIFT                    16
-#define CRL_APB_PL1_REF_CTRL_DIVISOR1_MASK                     0x003F0000U
-
-/*
-* 6 bit divider
-*/
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR0_DEFVAL 
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR0_SHIFT 
-#undef CRL_APB_PL1_REF_CTRL_DIVISOR0_MASK 
-#define CRL_APB_PL1_REF_CTRL_DIVISOR0_DEFVAL                   0x00052000
-#define CRL_APB_PL1_REF_CTRL_DIVISOR0_SHIFT                    8
-#define CRL_APB_PL1_REF_CTRL_DIVISOR0_MASK                     0x00003F00U
-
-/*
-* 000 = IOPLL; 010 = RPLL; 011 = DPLL; (This signal may only be toggled af
-    * ter 4 cycles of the old clock and 4 cycles of the new clock. This is not
-    *  usually an issue, but designers must be aware.)
-*/
-#undef CRL_APB_PL1_REF_CTRL_SRCSEL_DEFVAL 
-#undef CRL_APB_PL1_REF_CTRL_SRCSEL_SHIFT 
-#undef CRL_APB_PL1_REF_CTRL_SRCSEL_MASK 
-#define CRL_APB_PL1_REF_CTRL_SRCSEL_DEFVAL                     0x00052000
-#define CRL_APB_PL1_REF_CTRL_SRCSEL_SHIFT                      0
-#define CRL_APB_PL1_REF_CTRL_SRCSEL_MASK                       0x00000007U
-
-/*
 * 6 bit divider
 */
 #undef CRL_APB_AMS_REF_CTRL_DIVISOR1_DEFVAL 
@@ -1875,38 +1728,6 @@
 #define CRL_APB_TIMESTAMP_REF_CTRL_CLKACT_DEFVAL               0x00001800
 #define CRL_APB_TIMESTAMP_REF_CTRL_CLKACT_SHIFT                24
 #define CRL_APB_TIMESTAMP_REF_CTRL_CLKACT_MASK                 0x01000000U
-
-/*
-* 000 = IOPLL_TO_FPD; 010 = APLL; 011 = DPLL; (This signal may only be tog
-    * gled after 4 cycles of the old clock and 4 cycles of the new clock. This
-    *  is not usually an issue, but designers must be aware.)
-*/
-#undef CRF_APB_SATA_REF_CTRL_SRCSEL_DEFVAL 
-#undef CRF_APB_SATA_REF_CTRL_SRCSEL_SHIFT 
-#undef CRF_APB_SATA_REF_CTRL_SRCSEL_MASK 
-#define CRF_APB_SATA_REF_CTRL_SRCSEL_DEFVAL                    0x01001600
-#define CRF_APB_SATA_REF_CTRL_SRCSEL_SHIFT                     0
-#define CRF_APB_SATA_REF_CTRL_SRCSEL_MASK                      0x00000007U
-
-/*
-* Clock active signal. Switch to 0 to disable the clock
-*/
-#undef CRF_APB_SATA_REF_CTRL_CLKACT_DEFVAL 
-#undef CRF_APB_SATA_REF_CTRL_CLKACT_SHIFT 
-#undef CRF_APB_SATA_REF_CTRL_CLKACT_MASK 
-#define CRF_APB_SATA_REF_CTRL_CLKACT_DEFVAL                    0x01001600
-#define CRF_APB_SATA_REF_CTRL_CLKACT_SHIFT                     24
-#define CRF_APB_SATA_REF_CTRL_CLKACT_MASK                      0x01000000U
-
-/*
-* 6 bit divider
-*/
-#undef CRF_APB_SATA_REF_CTRL_DIVISOR0_DEFVAL 
-#undef CRF_APB_SATA_REF_CTRL_DIVISOR0_SHIFT 
-#undef CRF_APB_SATA_REF_CTRL_DIVISOR0_MASK 
-#define CRF_APB_SATA_REF_CTRL_DIVISOR0_DEFVAL                  0x01001600
-#define CRF_APB_SATA_REF_CTRL_DIVISOR0_SHIFT                   8
-#define CRF_APB_SATA_REF_CTRL_DIVISOR0_MASK                    0x00003F00U
 
 /*
 * 000 = IOPLL_TO_FPD; 010 = RPLL_TO_FPD; 011 = DPLL; (This signal may only
@@ -2165,61 +1986,6 @@
 #define CRF_APB_DDR_CTRL_SRCSEL_DEFVAL                         0x01000500
 #define CRF_APB_DDR_CTRL_SRCSEL_SHIFT                          0
 #define CRF_APB_DDR_CTRL_SRCSEL_MASK                           0x00000007U
-
-/*
-* 6 bit divider
-*/
-#undef CRF_APB_GPU_REF_CTRL_DIVISOR0_DEFVAL 
-#undef CRF_APB_GPU_REF_CTRL_DIVISOR0_SHIFT 
-#undef CRF_APB_GPU_REF_CTRL_DIVISOR0_MASK 
-#define CRF_APB_GPU_REF_CTRL_DIVISOR0_DEFVAL                   0x00001500
-#define CRF_APB_GPU_REF_CTRL_DIVISOR0_SHIFT                    8
-#define CRF_APB_GPU_REF_CTRL_DIVISOR0_MASK                     0x00003F00U
-
-/*
-* 000 = IOPLL_TO_FPD; 010 = VPLL; 011 = DPLL; (This signal may only be tog
-    * gled after 4 cycles of the old clock and 4 cycles of the new clock. This
-    *  is not usually an issue, but designers must be aware.)
-*/
-#undef CRF_APB_GPU_REF_CTRL_SRCSEL_DEFVAL 
-#undef CRF_APB_GPU_REF_CTRL_SRCSEL_SHIFT 
-#undef CRF_APB_GPU_REF_CTRL_SRCSEL_MASK 
-#define CRF_APB_GPU_REF_CTRL_SRCSEL_DEFVAL                     0x00001500
-#define CRF_APB_GPU_REF_CTRL_SRCSEL_SHIFT                      0
-#define CRF_APB_GPU_REF_CTRL_SRCSEL_MASK                       0x00000007U
-
-/*
-* Clock active signal. Switch to 0 to disable the clock, which will stop c
-    * lock for GPU (and both Pixel Processors).
-*/
-#undef CRF_APB_GPU_REF_CTRL_CLKACT_DEFVAL 
-#undef CRF_APB_GPU_REF_CTRL_CLKACT_SHIFT 
-#undef CRF_APB_GPU_REF_CTRL_CLKACT_MASK 
-#define CRF_APB_GPU_REF_CTRL_CLKACT_DEFVAL                     0x00001500
-#define CRF_APB_GPU_REF_CTRL_CLKACT_SHIFT                      24
-#define CRF_APB_GPU_REF_CTRL_CLKACT_MASK                       0x01000000U
-
-/*
-* Clock active signal for Pixel Processor. Switch to 0 to disable the cloc
-    * k only to this Pixel Processor
-*/
-#undef CRF_APB_GPU_REF_CTRL_PP0_CLKACT_DEFVAL 
-#undef CRF_APB_GPU_REF_CTRL_PP0_CLKACT_SHIFT 
-#undef CRF_APB_GPU_REF_CTRL_PP0_CLKACT_MASK 
-#define CRF_APB_GPU_REF_CTRL_PP0_CLKACT_DEFVAL                 0x00001500
-#define CRF_APB_GPU_REF_CTRL_PP0_CLKACT_SHIFT                  25
-#define CRF_APB_GPU_REF_CTRL_PP0_CLKACT_MASK                   0x02000000U
-
-/*
-* Clock active signal for Pixel Processor. Switch to 0 to disable the cloc
-    * k only to this Pixel Processor
-*/
-#undef CRF_APB_GPU_REF_CTRL_PP1_CLKACT_DEFVAL 
-#undef CRF_APB_GPU_REF_CTRL_PP1_CLKACT_SHIFT 
-#undef CRF_APB_GPU_REF_CTRL_PP1_CLKACT_MASK 
-#define CRF_APB_GPU_REF_CTRL_PP1_CLKACT_DEFVAL                 0x00001500
-#define CRF_APB_GPU_REF_CTRL_PP1_CLKACT_SHIFT                  26
-#define CRF_APB_GPU_REF_CTRL_PP1_CLKACT_MASK                   0x04000000U
 
 /*
 * 6 bit divider
@@ -29452,46 +29218,6 @@
 /*
 * Each bit applies to a single IO. Bit 0 for MIO[0].
 */
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_SHIFT      13
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_13_MASK       0x00002000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_SHIFT      14
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_14_MASK       0x00004000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_SHIFT      15
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_15_MASK       0x00008000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_SHIFT      16
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_16_MASK       0x00010000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_17_DEFVAL 
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_17_SHIFT 
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_17_MASK 
@@ -29532,42 +29258,12 @@
 /*
 * Each bit applies to a single IO. Bit 0 for MIO[0].
 */
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_SHIFT      21
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_21_MASK       0x00200000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_SHIFT      22
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_22_MASK       0x00400000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_DEFVAL 
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_SHIFT 
 #undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_MASK 
 #define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_DEFVAL     
 #define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_SHIFT      23
 #define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_23_MASK       0x00800000U
-
-/*
-* Each bit applies to a single IO. Bit 0 for MIO[0].
-*/
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_DEFVAL 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_SHIFT 
-#undef IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_MASK 
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_DEFVAL     
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_SHIFT      24
-#define IOU_SLCR_BANK0_CTRL4_PULL_HIGH_LOW_N_BIT_24_MASK       0x01000000U
 
 /*
 * Each bit applies to a single IO. Bit 0 for MIO[0].
@@ -33346,16 +33042,8 @@
 #define IOU_SLCR_SD_CONFIG_REG1_OFFSET                                             0XFF18031C
 #undef IOU_SLCR_SD_DLL_CTRL_OFFSET 
 #define IOU_SLCR_SD_DLL_CTRL_OFFSET                                                0XFF180358
-#undef IOU_SLCR_SD_CONFIG_REG1_OFFSET 
-#define IOU_SLCR_SD_CONFIG_REG1_OFFSET                                             0XFF18031C
-#undef IOU_SLCR_SD_DLL_CTRL_OFFSET 
-#define IOU_SLCR_SD_DLL_CTRL_OFFSET                                                0XFF180358
 #undef IOU_SLCR_SD_CONFIG_REG3_OFFSET 
 #define IOU_SLCR_SD_CONFIG_REG3_OFFSET                                             0XFF180324
-#undef IOU_SLCR_SD_CONFIG_REG3_OFFSET 
-#define IOU_SLCR_SD_CONFIG_REG3_OFFSET                                             0XFF180324
-#undef CRL_APB_RST_LPD_IOU2_OFFSET 
-#define CRL_APB_RST_LPD_IOU2_OFFSET                                                0XFF5E0238
 #undef CRL_APB_RST_LPD_IOU2_OFFSET 
 #define CRL_APB_RST_LPD_IOU2_OFFSET                                                0XFF5E0238
 #undef CRL_APB_RST_LPD_IOU2_OFFSET 
@@ -33386,16 +33074,12 @@
 #define IOU_SCNTRS_BASE_FREQUENCY_ID_REGISTER_OFFSET                               0XFF260020
 #undef IOU_SCNTRS_COUNTER_CONTROL_REGISTER_OFFSET 
 #define IOU_SCNTRS_COUNTER_CONTROL_REGISTER_OFFSET                                 0XFF260000
-#undef GPIO_DIRM_1_OFFSET 
-#define GPIO_DIRM_1_OFFSET                                                         0XFF0A0244
-#undef GPIO_OEN_1_OFFSET 
-#define GPIO_OEN_1_OFFSET                                                          0XFF0A0248
-#undef GPIO_MASK_DATA_1_LSW_OFFSET 
-#define GPIO_MASK_DATA_1_LSW_OFFSET                                                0XFF0A0008
-#undef GPIO_MASK_DATA_1_LSW_OFFSET 
-#define GPIO_MASK_DATA_1_LSW_OFFSET                                                0XFF0A0008
-#undef GPIO_MASK_DATA_1_LSW_OFFSET 
-#define GPIO_MASK_DATA_1_LSW_OFFSET                                                0XFF0A0008
+#undef CRL_APB_BOOT_PIN_CTRL_OFFSET 
+#define CRL_APB_BOOT_PIN_CTRL_OFFSET                                               0XFF5E0250
+#undef CRL_APB_BOOT_PIN_CTRL_OFFSET 
+#define CRL_APB_BOOT_PIN_CTRL_OFFSET                                               0XFF5E0250
+#undef CRL_APB_BOOT_PIN_CTRL_OFFSET 
+#define CRL_APB_BOOT_PIN_CTRL_OFFSET                                               0XFF5E0250
 #undef GPIO_DIRM_1_OFFSET 
 #define GPIO_DIRM_1_OFFSET                                                         0XFF0A0244
 #undef GPIO_OEN_1_OFFSET 
@@ -33472,36 +33156,6 @@
 #define CRF_APB_RST_FPD_TOP_GDMA_RESET_MASK                    0x00000040U
 
 /*
-* Pixel Processor (submodule of GPU) block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_DEFVAL               0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_SHIFT                4
-#define CRF_APB_RST_FPD_TOP_GPU_PP0_RESET_MASK                 0x00000010U
-
-/*
-* Pixel Processor (submodule of GPU) block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_DEFVAL               0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_SHIFT                5
-#define CRF_APB_RST_FPD_TOP_GPU_PP1_RESET_MASK                 0x00000020U
-
-/*
-* GPU block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_GPU_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_GPU_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_GPU_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_GPU_RESET_DEFVAL                   0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_GPU_RESET_SHIFT                    3
-#define CRF_APB_RST_FPD_TOP_GPU_RESET_MASK                     0x00000008U
-
-/*
 * GT block level reset
 */
 #undef CRF_APB_RST_FPD_TOP_GT_RESET_DEFVAL 
@@ -33510,16 +33164,6 @@
 #define CRF_APB_RST_FPD_TOP_GT_RESET_DEFVAL                    0x000F9FFE
 #define CRF_APB_RST_FPD_TOP_GT_RESET_SHIFT                     2
 #define CRF_APB_RST_FPD_TOP_GT_RESET_MASK                      0x00000004U
-
-/*
-* Sata block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL                  0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT                   1
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_MASK                    0x00000002U
 
 /*
 * Block level reset
@@ -33683,16 +33327,6 @@
 #define CRL_APB_RST_LPD_IOU2_SDIO0_RESET_MASK                  0x00000020U
 
 /*
-* Block level reset
-*/
-#undef CRL_APB_RST_LPD_IOU2_SDIO1_RESET_DEFVAL 
-#undef CRL_APB_RST_LPD_IOU2_SDIO1_RESET_SHIFT 
-#undef CRL_APB_RST_LPD_IOU2_SDIO1_RESET_MASK 
-#define CRL_APB_RST_LPD_IOU2_SDIO1_RESET_DEFVAL                0x0017FFFF
-#define CRL_APB_RST_LPD_IOU2_SDIO1_RESET_SHIFT                 6
-#define CRL_APB_RST_LPD_IOU2_SDIO1_RESET_MASK                  0x00000040U
-
-/*
 * SD or eMMC selection on SDIO0 0: SD enabled 1: eMMC enabled
 */
 #undef IOU_SLCR_CTRL_REG_SD_SD0_EMMC_SEL_DEFVAL 
@@ -33701,16 +33335,6 @@
 #define IOU_SLCR_CTRL_REG_SD_SD0_EMMC_SEL_DEFVAL               0x00000000
 #define IOU_SLCR_CTRL_REG_SD_SD0_EMMC_SEL_SHIFT                0
 #define IOU_SLCR_CTRL_REG_SD_SD0_EMMC_SEL_MASK                 0x00000001U
-
-/*
-* SD or eMMC selection on SDIO1 0: SD enabled 1: eMMC enabled
-*/
-#undef IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_DEFVAL 
-#undef IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_SHIFT 
-#undef IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_MASK 
-#define IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_DEFVAL               0x00000000
-#define IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_SHIFT                15
-#define IOU_SLCR_CTRL_REG_SD_SD1_EMMC_SEL_MASK                 0x00008000U
 
 /*
 * Should be set based on the final product usage 00 - Removable SCard Slot
@@ -33722,28 +33346,6 @@
 #define IOU_SLCR_SD_CONFIG_REG2_SD0_SLOTTYPE_DEFVAL            0x0FFC0FFC
 #define IOU_SLCR_SD_CONFIG_REG2_SD0_SLOTTYPE_SHIFT             12
 #define IOU_SLCR_SD_CONFIG_REG2_SD0_SLOTTYPE_MASK              0x00003000U
-
-/*
-* Should be set based on the final product usage 00 - Removable SCard Slot
-    *  01 - Embedded Slot for One Device 10 - Shared Bus Slot 11 - Reserved
-*/
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_MASK 
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_DEFVAL            0x0FFC0FFC
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_SHIFT             28
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_SLOTTYPE_MASK              0x30000000U
-
-/*
-* 8-bit Support for Embedded Device 1: The Core supports 8-bit Interface 0
-    * : Supports only 4-bit SD Interface
-*/
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_MASK 
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_DEFVAL                0x0FFC0FFC
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_SHIFT                 18
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_8BIT_MASK                  0x00040000U
 
 /*
 * 8-bit Support for Embedded Device 1: The Core supports 8-bit Interface 0
@@ -33787,36 +33389,6 @@
 #define IOU_SLCR_SD_CONFIG_REG2_SD0_3P3V_MASK                  0x00000080U
 
 /*
-* 1.8V Support 1: 1.8V supported 0: 1.8V not supported support
-*/
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_MASK 
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_DEFVAL                0x0FFC0FFC
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_SHIFT                 25
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_1P8V_MASK                  0x02000000U
-
-/*
-* 3.0V Support 1: 3.0V supported 0: 3.0V not supported support
-*/
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_MASK 
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_DEFVAL                0x0FFC0FFC
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_SHIFT                 24
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P0V_MASK                  0x01000000U
-
-/*
-* 3.3V Support 1: 3.3V supported 0: 3.3V not supported support
-*/
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_MASK 
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_DEFVAL                0x0FFC0FFC
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_SHIFT                 23
-#define IOU_SLCR_SD_CONFIG_REG2_SD1_3P3V_MASK                  0x00800000U
-
-/*
 * Base Clock Frequency for SD Clock. This is the frequency of the xin_clk.
 */
 #undef IOU_SLCR_SD_CONFIG_REG1_SD0_BASECLK_DEFVAL 
@@ -33848,37 +33420,6 @@
 #define IOU_SLCR_SD_DLL_CTRL_RESERVED_2_MASK                   0x00080000U
 
 /*
-* Base Clock Frequency for SD Clock. This is the frequency of the xin_clk.
-*/
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_MASK 
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_DEFVAL             0x32403240
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_SHIFT              23
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_BASECLK_MASK               0x7F800000U
-
-/*
-* Configures the Number of Taps (Phases) of the rxclk_in that is supported
-    * .
-*/
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_MASK 
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_DEFVAL          0x32403240
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_SHIFT           17
-#define IOU_SLCR_SD_CONFIG_REG1_SD1_TUNIGCOUNT_MASK            0x007E0000U
-
-/*
-* Reserved.
-*/
-#undef IOU_SLCR_SD_DLL_CTRL_RESERVED_DEFVAL 
-#undef IOU_SLCR_SD_DLL_CTRL_RESERVED_SHIFT 
-#undef IOU_SLCR_SD_DLL_CTRL_RESERVED_MASK 
-#define IOU_SLCR_SD_DLL_CTRL_RESERVED_DEFVAL                   0x00080008
-#define IOU_SLCR_SD_DLL_CTRL_RESERVED_SHIFT                    3
-#define IOU_SLCR_SD_DLL_CTRL_RESERVED_MASK                     0x00000008U
-
-/*
 * This is the Timer Count for Re-Tuning Timer for Re-Tuning Mode 1 to 3. S
     * etting to 4'b0 disables Re-Tuning Timer. 0h - Get information via other
     * source 1h = 1 seconds 2h = 2 seconds 3h = 4 seconds 4h = 8 seconds -- n
@@ -33890,29 +33431,6 @@
 #define IOU_SLCR_SD_CONFIG_REG3_SD0_RETUNETMR_DEFVAL           0x06070607
 #define IOU_SLCR_SD_CONFIG_REG3_SD0_RETUNETMR_SHIFT            6
 #define IOU_SLCR_SD_CONFIG_REG3_SD0_RETUNETMR_MASK             0x000003C0U
-
-/*
-* This is the Timer Count for Re-Tuning Timer for Re-Tuning Mode 1 to 3. S
-    * etting to 4'b0 disables Re-Tuning Timer. 0h - Get information via other
-    * source 1h = 1 seconds 2h = 2 seconds 3h = 4 seconds 4h = 8 seconds -- n
-    * = 2(n-1) seconds -- Bh = 1024 seconds Fh - Ch = Reserved
-*/
-#undef IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_DEFVAL 
-#undef IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_SHIFT 
-#undef IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_MASK 
-#define IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_DEFVAL           0x06070607
-#define IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_SHIFT            22
-#define IOU_SLCR_SD_CONFIG_REG3_SD1_RETUNETMR_MASK             0x03C00000U
-
-/*
-* Block level reset
-*/
-#undef CRL_APB_RST_LPD_IOU2_CAN0_RESET_DEFVAL 
-#undef CRL_APB_RST_LPD_IOU2_CAN0_RESET_SHIFT 
-#undef CRL_APB_RST_LPD_IOU2_CAN0_RESET_MASK 
-#define CRL_APB_RST_LPD_IOU2_CAN0_RESET_DEFVAL                 0x0017FFFF
-#define CRL_APB_RST_LPD_IOU2_CAN0_RESET_SHIFT                  7
-#define CRL_APB_RST_LPD_IOU2_CAN0_RESET_MASK                   0x00000080U
 
 /*
 * Block level reset
@@ -34384,84 +33902,67 @@
 #define IOU_SCNTRS_COUNTER_CONTROL_REGISTER_EN_MASK            0x00000001U
 
 /*
-* Operation is the same as DIRM_0[DIRECTION_0]
+* Value driven onto the mode pins, when out_en = 1
 */
-#undef GPIO_DIRM_1_DIRECTION_1_DEFVAL 
-#undef GPIO_DIRM_1_DIRECTION_1_SHIFT 
-#undef GPIO_DIRM_1_DIRECTION_1_MASK 
-#define GPIO_DIRM_1_DIRECTION_1_DEFVAL                         0x00000000
-#define GPIO_DIRM_1_DIRECTION_1_SHIFT                          0
-#define GPIO_DIRM_1_DIRECTION_1_MASK                           0x03FFFFFFU
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL                   0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT                    8
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK                     0x00000F00U
 
 /*
-* Operation is the same as OEN_0[OP_ENABLE_0]
+* When 0, the pins will be inputs from the board to the PS. When 1, the PS
+    *  will drive these pins
 */
-#undef GPIO_OEN_1_OP_ENABLE_1_DEFVAL 
-#undef GPIO_OEN_1_OP_ENABLE_1_SHIFT 
-#undef GPIO_OEN_1_OP_ENABLE_1_MASK 
-#define GPIO_OEN_1_OP_ENABLE_1_DEFVAL                          0x00000000
-#define GPIO_OEN_1_OP_ENABLE_1_SHIFT                           0
-#define GPIO_OEN_1_OP_ENABLE_1_MASK                            0x03FFFFFFU
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL                    0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT                     0
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK                      0x0000000FU
 
 /*
-* Operation is the same as MASK_DATA_0_LSW[MASK_0_LSW]
+* Value driven onto the mode pins, when out_en = 1
 */
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT                  16
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK                   0xFFFF0000U
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL                   0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT                    8
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK                     0x00000F00U
 
 /*
-* Operation is the same as MASK_DATA_0_LSW[DATA_0_LSW]
+* When 0, the pins will be inputs from the board to the PS. When 1, the PS
+    *  will drive these pins
 */
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT                  0
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK                   0x0000FFFFU
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL                    0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT                     0
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK                      0x0000000FU
 
 /*
-* Operation is the same as MASK_DATA_0_LSW[MASK_0_LSW]
+* Value driven onto the mode pins, when out_en = 1
 */
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT                  16
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK                   0xFFFF0000U
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_DEFVAL                   0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_SHIFT                    8
+#define CRL_APB_BOOT_PIN_CTRL_OUT_VAL_MASK                     0x00000F00U
 
 /*
-* Operation is the same as MASK_DATA_0_LSW[DATA_0_LSW]
+* When 0, the pins will be inputs from the board to the PS. When 1, the PS
+    *  will drive these pins
 */
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT                  0
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK                   0x0000FFFFU
-
-/*
-* Operation is the same as MASK_DATA_0_LSW[MASK_0_LSW]
-*/
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_SHIFT                  16
-#define GPIO_MASK_DATA_1_LSW_MASK_1_LSW_MASK                   0xFFFF0000U
-
-/*
-* Operation is the same as MASK_DATA_0_LSW[DATA_0_LSW]
-*/
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT 
-#undef GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK 
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL                 0x00000000
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT                  0
-#define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK                   0x0000FFFFU
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT 
+#undef CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK 
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_DEFVAL                    0x00000000
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_SHIFT                     0
+#define CRL_APB_BOOT_PIN_CTRL_OUT_EN_MASK                      0x0000000FU
 
 /*
 * Operation is the same as DIRM_0[DIRECTION_0]
@@ -34562,6 +34063,90 @@
 #define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_DEFVAL                 0x00000000
 #define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_SHIFT                  0
 #define GPIO_MASK_DATA_1_LSW_DATA_1_LSW_MASK                   0x0000FFFFU
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_OFFSET 
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_OFFSET                                        0XFFD80218
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_OFFSET 
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_OFFSET                                          0XFFD80220
+
+/*
+* Power-down Request Interrupt Enable for GPU PP0
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_DEFVAL                0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_SHIFT                 4
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP0_MASK                  0x00000010U
+
+/*
+* Power-down Request Interrupt Enable for GPU PP1
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_DEFVAL                0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_SHIFT                 5
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_PP1_MASK                  0x00000020U
+
+/*
+* Power-down Request Interrupt Enable for ACPU2
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_DEFVAL              0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_SHIFT               2
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU2_MASK                0x00000004U
+
+/*
+* Power-down Request Interrupt Enable for ACPU3
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_DEFVAL              0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_SHIFT               3
+#define PMU_GLOBAL_REQ_PWRDWN_INT_EN_ACPU3_MASK                0x00000008U
+
+/*
+* Power-down Request Trigger for GPU PP0
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_DEFVAL                  0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_SHIFT                   4
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP0_MASK                    0x00000010U
+
+/*
+* Power-down Request Trigger for GPU PP1
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_DEFVAL                  0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_SHIFT                   5
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_PP1_MASK                    0x00000020U
+
+/*
+* Power-down Request Trigger for ACPU2
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_DEFVAL                0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_SHIFT                 2
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU2_MASK                  0x00000004U
+
+/*
+* Power-down Request Trigger for ACPU3
+*/
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_DEFVAL 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_SHIFT 
+#undef PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_MASK 
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_DEFVAL                0x00000000
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_SHIFT                 3
+#define PMU_GLOBAL_REQ_PWRDWN_TRIG_ACPU3_MASK                  0x00000008U
 #undef FPD_SLCR_SECURE_SLCR_DPDMA_OFFSET 
 #define FPD_SLCR_SECURE_SLCR_DPDMA_OFFSET                                          0XFD690040
 #undef FPD_SLCR_SECURE_SLCR_PCIE_OFFSET 
@@ -35082,8 +34667,8 @@
 #define SERDES_L0_L2_REF_CLK_SEL_OFFSET                                            0XFD402868
 #undef SERDES_L0_L3_REF_CLK_SEL_OFFSET 
 #define SERDES_L0_L3_REF_CLK_SEL_OFFSET                                            0XFD40286C
-#undef SERDES_L2_TM_PLL_DIG_37_OFFSET 
-#define SERDES_L2_TM_PLL_DIG_37_OFFSET                                             0XFD40A094
+#undef SERDES_L1_TM_PLL_DIG_37_OFFSET 
+#define SERDES_L1_TM_PLL_DIG_37_OFFSET                                             0XFD406094
 #undef SERDES_L2_PLL_SS_STEPS_0_LSB_OFFSET 
 #define SERDES_L2_PLL_SS_STEPS_0_LSB_OFFSET                                        0XFD40A368
 #undef SERDES_L2_PLL_SS_STEPS_1_MSB_OFFSET 
@@ -35120,20 +34705,14 @@
 #define SERDES_L3_PLL_SS_STEP_SIZE_2_OFFSET                                        0XFD40E378
 #undef SERDES_L3_PLL_SS_STEP_SIZE_3_MSB_OFFSET 
 #define SERDES_L3_PLL_SS_STEP_SIZE_3_MSB_OFFSET                                    0XFD40E37C
-#undef SERDES_L1_PLL_FBDIV_FRAC_3_MSB_OFFSET 
-#define SERDES_L1_PLL_FBDIV_FRAC_3_MSB_OFFSET                                      0XFD406360
 #undef SERDES_L1_TM_DIG_6_OFFSET 
 #define SERDES_L1_TM_DIG_6_OFFSET                                                  0XFD40506C
 #undef SERDES_L1_TX_DIG_TM_61_OFFSET 
 #define SERDES_L1_TX_DIG_TM_61_OFFSET                                              0XFD4040F4
-#undef SERDES_L2_TM_DIG_6_OFFSET 
-#define SERDES_L2_TM_DIG_6_OFFSET                                                  0XFD40906C
-#undef SERDES_L2_TX_DIG_TM_61_OFFSET 
-#define SERDES_L2_TX_DIG_TM_61_OFFSET                                              0XFD4080F4
 #undef SERDES_L0_TM_AUX_0_OFFSET 
 #define SERDES_L0_TM_AUX_0_OFFSET                                                  0XFD4010CC
-#undef SERDES_L2_TM_AUX_0_OFFSET 
-#define SERDES_L2_TM_AUX_0_OFFSET                                                  0XFD4090CC
+#undef SERDES_L1_TM_AUX_0_OFFSET 
+#define SERDES_L1_TM_AUX_0_OFFSET                                                  0XFD4050CC
 #undef SERDES_L0_TM_DIG_8_OFFSET 
 #define SERDES_L0_TM_DIG_8_OFFSET                                                  0XFD401074
 #undef SERDES_L1_TM_DIG_8_OFFSET 
@@ -35182,8 +34761,6 @@
 #define SERDES_L1_TM_E_ILL1_OFFSET                                                 0XFD405924
 #undef SERDES_L1_TM_E_ILL2_OFFSET 
 #define SERDES_L1_TM_E_ILL2_OFFSET                                                 0XFD405928
-#undef SERDES_L1_TM_ILL11_OFFSET 
-#define SERDES_L1_TM_ILL11_OFFSET                                                  0XFD40598C
 #undef SERDES_L1_TM_IQ_ILL3_OFFSET 
 #define SERDES_L1_TM_IQ_ILL3_OFFSET                                                0XFD405900
 #undef SERDES_L1_TM_E_ILL3_OFFSET 
@@ -35200,32 +34777,6 @@
 #define SERDES_L1_TM_E_ILL9_OFFSET                                                 0XFD405944
 #undef SERDES_L1_TM_ILL13_OFFSET 
 #define SERDES_L1_TM_ILL13_OFFSET                                                  0XFD405994
-#undef SERDES_L2_TM_MISC2_OFFSET 
-#define SERDES_L2_TM_MISC2_OFFSET                                                  0XFD40989C
-#undef SERDES_L2_TM_IQ_ILL1_OFFSET 
-#define SERDES_L2_TM_IQ_ILL1_OFFSET                                                0XFD4098F8
-#undef SERDES_L2_TM_IQ_ILL2_OFFSET 
-#define SERDES_L2_TM_IQ_ILL2_OFFSET                                                0XFD4098FC
-#undef SERDES_L2_TM_ILL12_OFFSET 
-#define SERDES_L2_TM_ILL12_OFFSET                                                  0XFD409990
-#undef SERDES_L2_TM_E_ILL1_OFFSET 
-#define SERDES_L2_TM_E_ILL1_OFFSET                                                 0XFD409924
-#undef SERDES_L2_TM_E_ILL2_OFFSET 
-#define SERDES_L2_TM_E_ILL2_OFFSET                                                 0XFD409928
-#undef SERDES_L2_TM_IQ_ILL3_OFFSET 
-#define SERDES_L2_TM_IQ_ILL3_OFFSET                                                0XFD409900
-#undef SERDES_L2_TM_E_ILL3_OFFSET 
-#define SERDES_L2_TM_E_ILL3_OFFSET                                                 0XFD40992C
-#undef SERDES_L2_TM_ILL8_OFFSET 
-#define SERDES_L2_TM_ILL8_OFFSET                                                   0XFD409980
-#undef SERDES_L2_TM_IQ_ILL8_OFFSET 
-#define SERDES_L2_TM_IQ_ILL8_OFFSET                                                0XFD409914
-#undef SERDES_L2_TM_IQ_ILL9_OFFSET 
-#define SERDES_L2_TM_IQ_ILL9_OFFSET                                                0XFD409918
-#undef SERDES_L2_TM_E_ILL8_OFFSET 
-#define SERDES_L2_TM_E_ILL8_OFFSET                                                 0XFD409940
-#undef SERDES_L2_TM_E_ILL9_OFFSET 
-#define SERDES_L2_TM_E_ILL9_OFFSET                                                 0XFD409944
 #undef SERDES_L2_TM_ILL13_OFFSET 
 #define SERDES_L2_TM_ILL13_OFFSET                                                  0XFD409994
 #undef SERDES_L3_TM_ILL13_OFFSET 
@@ -35284,24 +34835,20 @@
 #define SERDES_ICM_CFG0_OFFSET                                                     0XFD410010
 #undef SERDES_ICM_CFG1_OFFSET 
 #define SERDES_ICM_CFG1_OFFSET                                                     0XFD410014
+#undef SERDES_L2_TXPMD_TM_45_OFFSET 
+#define SERDES_L2_TXPMD_TM_45_OFFSET                                               0XFD408CB4
 #undef SERDES_L3_TXPMD_TM_45_OFFSET 
 #define SERDES_L3_TXPMD_TM_45_OFFSET                                               0XFD40CCB4
-#undef SERDES_L1_TX_ANA_TM_118_OFFSET 
-#define SERDES_L1_TX_ANA_TM_118_OFFSET                                             0XFD4041D8
+#undef SERDES_L2_TX_ANA_TM_118_OFFSET 
+#define SERDES_L2_TX_ANA_TM_118_OFFSET                                             0XFD4081D8
 #undef SERDES_L3_TX_ANA_TM_118_OFFSET 
 #define SERDES_L3_TX_ANA_TM_118_OFFSET                                             0XFD40C1D8
-#undef SERDES_L1_TM_CDR5_OFFSET 
-#define SERDES_L1_TM_CDR5_OFFSET                                                   0XFD405C14
-#undef SERDES_L1_TM_CDR16_OFFSET 
-#define SERDES_L1_TM_CDR16_OFFSET                                                  0XFD405C40
-#undef SERDES_L1_TM_EQ0_OFFSET 
-#define SERDES_L1_TM_EQ0_OFFSET                                                    0XFD40594C
-#undef SERDES_L1_TM_EQ1_OFFSET 
-#define SERDES_L1_TM_EQ1_OFFSET                                                    0XFD405950
-#undef SERDES_L1_TX_ANA_TM_18_OFFSET 
-#define SERDES_L1_TX_ANA_TM_18_OFFSET                                              0XFD404048
+#undef SERDES_L2_TXPMD_TM_48_OFFSET 
+#define SERDES_L2_TXPMD_TM_48_OFFSET                                               0XFD408CC0
 #undef SERDES_L3_TXPMD_TM_48_OFFSET 
 #define SERDES_L3_TXPMD_TM_48_OFFSET                                               0XFD40CCC0
+#undef SERDES_L2_TX_ANA_TM_18_OFFSET 
+#define SERDES_L2_TX_ANA_TM_18_OFFSET                                              0XFD408048
 #undef SERDES_L3_TX_ANA_TM_18_OFFSET 
 #define SERDES_L3_TX_ANA_TM_18_OFFSET                                              0XFD40C048
 
@@ -35384,6 +34931,17 @@
 #define SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_LCL_SEL_MASK       0x00000080U
 
 /*
+* Bit 0 of lane 1 ref clock mux one hot sel. Set to 1 to select lane 0 sli
+    * cer output from ref clock network
+*/
+#undef SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_DEFVAL 
+#undef SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_SHIFT 
+#undef SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_MASK 
+#define SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_DEFVAL       0x00000080
+#define SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_SHIFT        0
+#define SERDES_L0_L1_REF_CLK_SEL_L1_REF_CLK_SEL_0_MASK         0x00000001U
+
+/*
 * Sel of lane 2 ref clock local mux. Set to 1 to select lane 1 slicer outp
     * ut. Set to 0 to select lane2 ref clock mux output.
 */
@@ -35406,14 +34964,25 @@
 #define SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_LCL_SEL_MASK       0x00000080U
 
 /*
+* Bit 2 of lane 3 ref clock mux one hot sel. Set to 1 to select lane 2 sli
+    * cer output from ref clock network
+*/
+#undef SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_DEFVAL 
+#undef SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_SHIFT 
+#undef SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_MASK 
+#define SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_DEFVAL       0x00000080
+#define SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_SHIFT        2
+#define SERDES_L0_L3_REF_CLK_SEL_L3_REF_CLK_SEL_2_MASK         0x00000004U
+
+/*
 * Enable/Disable coarse code satureation limiting logic
 */
-#undef SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_DEFVAL 
-#undef SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_SHIFT 
-#undef SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_MASK 
-#define SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_DEFVAL  0x00000000
-#define SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_SHIFT  4
-#define SERDES_L2_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_MASK  0x00000010U
+#undef SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_DEFVAL 
+#undef SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_SHIFT 
+#undef SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_MASK 
+#define SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_DEFVAL  0x00000000
+#define SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_SHIFT  4
+#define SERDES_L1_TM_PLL_DIG_37_TM_ENABLE_COARSE_SATURATION_MASK  0x00000010U
 
 /*
 * Spread Spectrum No of Steps [7:0]
@@ -35536,16 +35105,6 @@
 #define SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_FORCE_SS_NUM_OF_STEPS_MASK  0x00000020U
 
 /*
-* Enable test mode forcing on enable Spread Spectrum
-*/
-#undef SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_DEFVAL 
-#undef SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_SHIFT 
-#undef SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_MASK 
-#define SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_DEFVAL  0x00000000
-#define SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_SHIFT  7
-#define SERDES_L1_PLL_SS_STEP_SIZE_3_MSB_TM_FORCE_EN_SS_MASK   0x00000080U
-
-/*
 * Step Size for Spread Spectrum [7:0]
 */
 #undef SERDES_L2_PLL_SS_STEP_SIZE_0_LSB_SS_STEP_SIZE_0_LSB_DEFVAL 
@@ -35666,36 +35225,6 @@
 #define SERDES_L3_PLL_SS_STEP_SIZE_3_MSB_FORCE_SS_NUM_OF_STEPS_MASK  0x00000020U
 
 /*
-* Enable test mode force on fractional mode enable
-*/
-#undef SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_DEFVAL 
-#undef SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_SHIFT 
-#undef SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_MASK 
-#define SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_DEFVAL  0x00000000
-#define SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_SHIFT  6
-#define SERDES_L1_PLL_FBDIV_FRAC_3_MSB_TM_FORCE_EN_FRAC_MASK   0x00000040U
-
-/*
-* Bypass 8b10b decoder
-*/
-#undef SERDES_L1_TM_DIG_6_BYPASS_DECODER_DEFVAL 
-#undef SERDES_L1_TM_DIG_6_BYPASS_DECODER_SHIFT 
-#undef SERDES_L1_TM_DIG_6_BYPASS_DECODER_MASK 
-#define SERDES_L1_TM_DIG_6_BYPASS_DECODER_DEFVAL               0x00000000
-#define SERDES_L1_TM_DIG_6_BYPASS_DECODER_SHIFT                3
-#define SERDES_L1_TM_DIG_6_BYPASS_DECODER_MASK                 0x00000008U
-
-/*
-* Enable Bypass for <3> TM_DIG_CTRL_6
-*/
-#undef SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_DEFVAL 
-#undef SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_SHIFT 
-#undef SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_MASK 
-#define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_DEFVAL             0x00000000
-#define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_SHIFT              2
-#define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DEC_MASK               0x00000004U
-
-/*
 * Bypass Descrambler
 */
 #undef SERDES_L1_TM_DIG_6_BYPASS_DESCRAM_DEFVAL 
@@ -35714,16 +35243,6 @@
 #define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DESCRAM_DEFVAL         0x00000000
 #define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DESCRAM_SHIFT          0
 #define SERDES_L1_TM_DIG_6_FORCE_BYPASS_DESCRAM_MASK           0x00000001U
-
-/*
-* Enable/disable encoder bypass signal
-*/
-#undef SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_DEFVAL 
-#undef SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_SHIFT 
-#undef SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_MASK 
-#define SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_DEFVAL               0x00000000
-#define SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_SHIFT                3
-#define SERDES_L1_TX_DIG_TM_61_BYPASS_ENC_MASK                 0x00000008U
 
 /*
 * Bypass scrambler signal
@@ -35746,46 +35265,6 @@
 #define SERDES_L1_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_MASK         0x00000001U
 
 /*
-* Bypass Descrambler
-*/
-#undef SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_DEFVAL 
-#undef SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_SHIFT 
-#undef SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_MASK 
-#define SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_DEFVAL               0x00000000
-#define SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_SHIFT                1
-#define SERDES_L2_TM_DIG_6_BYPASS_DESCRAM_MASK                 0x00000002U
-
-/*
-* Enable Bypass for <1> TM_DIG_CTRL_6
-*/
-#undef SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_DEFVAL 
-#undef SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_SHIFT 
-#undef SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_MASK 
-#define SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_DEFVAL         0x00000000
-#define SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_SHIFT          0
-#define SERDES_L2_TM_DIG_6_FORCE_BYPASS_DESCRAM_MASK           0x00000001U
-
-/*
-* Bypass scrambler signal
-*/
-#undef SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_DEFVAL 
-#undef SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_SHIFT 
-#undef SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_MASK 
-#define SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_DEFVAL             0x00000000
-#define SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_SHIFT              1
-#define SERDES_L2_TX_DIG_TM_61_BYPASS_SCRAM_MASK               0x00000002U
-
-/*
-* Enable/disable scrambler bypass signal
-*/
-#undef SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_DEFVAL 
-#undef SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_SHIFT 
-#undef SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_MASK 
-#define SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_DEFVAL       0x00000000
-#define SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_SHIFT        0
-#define SERDES_L2_TX_DIG_TM_61_FORCE_BYPASS_SCRAM_MASK         0x00000001U
-
-/*
 * Spare- not used
 */
 #undef SERDES_L0_TM_AUX_0_BIT_2_DEFVAL 
@@ -35798,12 +35277,12 @@
 /*
 * Spare- not used
 */
-#undef SERDES_L2_TM_AUX_0_BIT_2_DEFVAL 
-#undef SERDES_L2_TM_AUX_0_BIT_2_SHIFT 
-#undef SERDES_L2_TM_AUX_0_BIT_2_MASK 
-#define SERDES_L2_TM_AUX_0_BIT_2_DEFVAL                        0x00000000
-#define SERDES_L2_TM_AUX_0_BIT_2_SHIFT                         5
-#define SERDES_L2_TM_AUX_0_BIT_2_MASK                          0x00000020U
+#undef SERDES_L1_TM_AUX_0_BIT_2_DEFVAL 
+#undef SERDES_L1_TM_AUX_0_BIT_2_SHIFT 
+#undef SERDES_L1_TM_AUX_0_BIT_2_MASK 
+#define SERDES_L1_TM_AUX_0_BIT_2_DEFVAL                        0x00000000
+#define SERDES_L1_TM_AUX_0_BIT_2_SHIFT                         5
+#define SERDES_L1_TM_AUX_0_BIT_2_MASK                          0x00000020U
 
 /*
 * Enable Eye Surf
@@ -36050,16 +35529,6 @@
 #define SERDES_L1_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_MASK       0x000000FFU
 
 /*
-* G2A_PCIe1 PLL ctr bypass value
-*/
-#undef SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_DEFVAL 
-#undef SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_SHIFT 
-#undef SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_MASK 
-#define SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_DEFVAL  0x00000000
-#define SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_SHIFT  4
-#define SERDES_L1_TM_ILL11_G2A_PCIEG1_PLL_CTR_11_8_BYP_VAL_MASK  0x000000F0U
-
-/*
 * IQ ILL F2CALCODE bypass value. MPHY : G2a, SATA : Gen3
 */
 #undef SERDES_L1_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_DEFVAL 
@@ -36138,138 +35607,6 @@
 #define SERDES_L1_TM_ILL13_ILL_CAL_IDLE_VAL_REFCNT_DEFVAL      0x00000001
 #define SERDES_L1_TM_ILL13_ILL_CAL_IDLE_VAL_REFCNT_SHIFT       0
 #define SERDES_L1_TM_ILL13_ILL_CAL_IDLE_VAL_REFCNT_MASK        0x00000007U
-
-/*
-* ILL calib counts BYPASSED with calcode bits
-*/
-#undef SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_DEFVAL 
-#undef SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_SHIFT 
-#undef SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_MASK 
-#define SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_DEFVAL        0x00000000
-#define SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_SHIFT         7
-#define SERDES_L2_TM_MISC2_ILL_CAL_BYPASS_COUNTS_MASK          0x00000080U
-
-/*
-* IQ ILL F0 CALCODE bypass value. MPHY : G1a, PCIE : Gen 1, SATA : Gen1 ,
-    * USB3 : SS
-*/
-#undef SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_DEFVAL 
-#undef SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_SHIFT 
-#undef SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_MASK 
-#define SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_DEFVAL   0x00000000
-#define SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_SHIFT    0
-#define SERDES_L2_TM_IQ_ILL1_ILL_BYPASS_IQ_CALCODE_F0_MASK     0x000000FFU
-
-/*
-* IQ ILL F1 CALCODE bypass value. MPHY : G1b, PCIE : Gen2, SATA: Gen2
-*/
-#undef SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_DEFVAL 
-#undef SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_SHIFT 
-#undef SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_MASK 
-#define SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_DEFVAL   0x00000000
-#define SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_SHIFT    0
-#define SERDES_L2_TM_IQ_ILL2_ILL_BYPASS_IQ_CALCODE_F1_MASK     0x000000FFU
-
-/*
-* G1A pll ctr bypass value
-*/
-#undef SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_DEFVAL 
-#undef SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_SHIFT 
-#undef SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_MASK 
-#define SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_DEFVAL          0x00000000
-#define SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_SHIFT           0
-#define SERDES_L2_TM_ILL12_G1A_PLL_CTR_BYP_VAL_MASK            0x000000FFU
-
-/*
-* E ILL F0 CALCODE bypass value. MPHY : G1a, PCIE : Gen 1, SATA : Gen1 , U
-    * SB3 : SS
-*/
-#undef SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_DEFVAL 
-#undef SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_SHIFT 
-#undef SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_MASK 
-#define SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_DEFVAL     0x00000000
-#define SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_SHIFT      0
-#define SERDES_L2_TM_E_ILL1_ILL_BYPASS_E_CALCODE_F0_MASK       0x000000FFU
-
-/*
-* E ILL F1 CALCODE bypass value. MPHY : G1b, PCIE : Gen2, SATA: Gen2
-*/
-#undef SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_DEFVAL 
-#undef SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_SHIFT 
-#undef SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_MASK 
-#define SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_DEFVAL     0x00000000
-#define SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_SHIFT      0
-#define SERDES_L2_TM_E_ILL2_ILL_BYPASS_E_CALCODE_F1_MASK       0x000000FFU
-
-/*
-* IQ ILL F2CALCODE bypass value. MPHY : G2a, SATA : Gen3
-*/
-#undef SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_DEFVAL 
-#undef SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_SHIFT 
-#undef SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_MASK 
-#define SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_DEFVAL   0x00000000
-#define SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_SHIFT    0
-#define SERDES_L2_TM_IQ_ILL3_ILL_BYPASS_IQ_CALCODE_F2_MASK     0x000000FFU
-
-/*
-* E ILL F2CALCODE bypass value. MPHY : G2a, SATA : Gen3
-*/
-#undef SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_DEFVAL 
-#undef SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_SHIFT 
-#undef SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_MASK 
-#define SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_DEFVAL     0x00000000
-#define SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_SHIFT      0
-#define SERDES_L2_TM_E_ILL3_ILL_BYPASS_E_CALCODE_F2_MASK       0x000000FFU
-
-/*
-* ILL calibration code change wait time
-*/
-#undef SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_DEFVAL 
-#undef SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_SHIFT 
-#undef SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_MASK 
-#define SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_DEFVAL             0x00000002
-#define SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_SHIFT              0
-#define SERDES_L2_TM_ILL8_ILL_CAL_ITER_WAIT_MASK               0x000000FFU
-
-/*
-* IQ ILL polytrim bypass value
-*/
-#undef SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_DEFVAL 
-#undef SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_SHIFT 
-#undef SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_MASK 
-#define SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_DEFVAL  0x00000000
-#define SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_SHIFT  0
-#define SERDES_L2_TM_IQ_ILL8_ILL_BYPASS_IQ_POLYTRIM_VAL_MASK   0x000000FFU
-
-/*
-* bypass IQ polytrim
-*/
-#undef SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_DEFVAL 
-#undef SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_SHIFT 
-#undef SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_MASK 
-#define SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_DEFVAL      0x00000000
-#define SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_SHIFT       0
-#define SERDES_L2_TM_IQ_ILL9_ILL_BYPASS_IQ_POLYTIM_MASK        0x00000001U
-
-/*
-* E ILL polytrim bypass value
-*/
-#undef SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_DEFVAL 
-#undef SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_SHIFT 
-#undef SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_MASK 
-#define SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_DEFVAL   0x00000000
-#define SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_SHIFT    0
-#define SERDES_L2_TM_E_ILL8_ILL_BYPASS_E_POLYTRIM_VAL_MASK     0x000000FFU
-
-/*
-* bypass E polytrim
-*/
-#undef SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_DEFVAL 
-#undef SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_SHIFT 
-#undef SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_MASK 
-#define SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_DEFVAL        0x00000000
-#define SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_SHIFT         0
-#define SERDES_L2_TM_E_ILL9_ILL_BYPASS_E_POLYTIM_MASK          0x00000001U
 
 /*
 * ILL cal idle val refcnt
@@ -36628,6 +35965,56 @@
 /*
 * Enable/disable DP post2 path
 */
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_SHIFT 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_MASK 
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_SHIFT  5
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_MASK  0x00000020U
+
+/*
+* Override enable/disable of DP post2 path
+*/
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_SHIFT 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_MASK 
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_SHIFT  4
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST2_PATH_MASK  0x00000010U
+
+/*
+* Override enable/disable of DP post1 path
+*/
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_SHIFT 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_MASK 
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_SHIFT  2
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_POST1_PATH_MASK  0x00000004U
+
+/*
+* Enable/disable DP main path
+*/
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_SHIFT 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_MASK 
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_SHIFT  1
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_MAIN_PATH_MASK  0x00000002U
+
+/*
+* Override enable/disable of DP main path
+*/
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_SHIFT 
+#undef SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_MASK 
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_SHIFT  0
+#define SERDES_L2_TXPMD_TM_45_DP_TM_TX_OVRD_DP_ENABLE_MAIN_PATH_MASK  0x00000001U
+
+/*
+* Enable/disable DP post2 path
+*/
 #undef SERDES_L3_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_DEFVAL 
 #undef SERDES_L3_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_SHIFT 
 #undef SERDES_L3_TXPMD_TM_45_DP_TM_TX_DP_ENABLE_POST2_PATH_MASK 
@@ -36678,12 +36065,12 @@
 /*
 * Test register force for enabling/disablign TX deemphasis bits <17:0>
 */
-#undef SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_DEFVAL 
-#undef SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_SHIFT 
-#undef SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_MASK 
-#define SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_DEFVAL    0x00000000
-#define SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_SHIFT     0
-#define SERDES_L1_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_MASK      0x00000001U
+#undef SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_DEFVAL 
+#undef SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_SHIFT 
+#undef SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_MASK 
+#define SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_DEFVAL    0x00000000
+#define SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_SHIFT     0
+#define SERDES_L2_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_MASK      0x00000001U
 
 /*
 * Test register force for enabling/disablign TX deemphasis bits <17:0>
@@ -36696,75 +36083,14 @@
 #define SERDES_L3_TX_ANA_TM_118_FORCE_TX_DEEMPH_17_0_MASK      0x00000001U
 
 /*
-* FPHL FSM accumulate cycles
+* Margining factor value
 */
-#undef SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_DEFVAL 
-#undef SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_SHIFT 
-#undef SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_MASK 
-#define SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_DEFVAL           0x00000000
-#define SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_SHIFT            5
-#define SERDES_L1_TM_CDR5_FPHL_FSM_ACC_CYCLES_MASK             0x000000E0U
-
-/*
-* FFL Phase0 int gain aka 2ol SD update rate
-*/
-#undef SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_DEFVAL 
-#undef SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_SHIFT 
-#undef SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_MASK 
-#define SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_DEFVAL              0x00000000
-#define SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_SHIFT               0
-#define SERDES_L1_TM_CDR5_FFL_PH0_INT_GAIN_MASK                0x0000001FU
-
-/*
-* FFL Phase0 prop gain aka 1ol SD update rate
-*/
-#undef SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_DEFVAL 
-#undef SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_SHIFT 
-#undef SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_MASK 
-#define SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_DEFVAL            0x00000000
-#define SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_SHIFT             0
-#define SERDES_L1_TM_CDR16_FFL_PH0_PROP_GAIN_MASK              0x0000001FU
-
-/*
-* EQ stg 2 controls BYPASSED
-*/
-#undef SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_DEFVAL 
-#undef SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_SHIFT 
-#undef SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_MASK 
-#define SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_DEFVAL               0x00000000
-#define SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_SHIFT                5
-#define SERDES_L1_TM_EQ0_EQ_STG2_CTRL_BYP_MASK                 0x00000020U
-
-/*
-* EQ STG2 RL PROG
-*/
-#undef SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_DEFVAL 
-#undef SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_SHIFT 
-#undef SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_MASK 
-#define SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_DEFVAL                0x00000000
-#define SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_SHIFT                 0
-#define SERDES_L1_TM_EQ1_EQ_STG2_RL_PROG_MASK                  0x00000003U
-
-/*
-* EQ stg 2 preamp mode val
-*/
-#undef SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_DEFVAL 
-#undef SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_SHIFT 
-#undef SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_MASK 
-#define SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_DEFVAL        0x00000000
-#define SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_SHIFT         2
-#define SERDES_L1_TM_EQ1_EQ_STG2_PREAMP_MODE_VAL_MASK          0x00000004U
-
-/*
-* pipe_TX_Deemph. 0: -6dB de-emphasis, 1: -3.5dB de-emphasis, 2 : No de-em
-    * phasis, Others: reserved
-*/
-#undef SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_DEFVAL 
-#undef SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_SHIFT 
-#undef SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_MASK 
-#define SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_DEFVAL       0x00000002
-#define SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_SHIFT        0
-#define SERDES_L1_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_MASK         0x000000FFU
+#undef SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_DEFVAL 
+#undef SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_SHIFT 
+#undef SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_MASK 
+#define SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_DEFVAL  0x00000000
+#define SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_SHIFT  0
+#define SERDES_L2_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_MASK  0x0000001FU
 
 /*
 * Margining factor value
@@ -36775,6 +36101,17 @@
 #define SERDES_L3_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_DEFVAL  0x00000000
 #define SERDES_L3_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_SHIFT  0
 #define SERDES_L3_TXPMD_TM_48_TM_RESULTANT_MARGINING_FACTOR_MASK  0x0000001FU
+
+/*
+* pipe_TX_Deemph. 0: -6dB de-emphasis, 1: -3.5dB de-emphasis, 2 : No de-em
+    * phasis, Others: reserved
+*/
+#undef SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_DEFVAL 
+#undef SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_SHIFT 
+#undef SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_MASK 
+#define SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_DEFVAL       0x00000002
+#define SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_SHIFT        0
+#define SERDES_L2_TX_ANA_TM_18_PIPE_TX_DEEMPH_7_0_MASK         0x000000FFU
 
 /*
 * pipe_TX_Deemph. 0: -6dB de-emphasis, 1: -3.5dB de-emphasis, 2 : No de-em
@@ -36796,10 +36133,6 @@
 #define CRL_APB_RST_LPD_TOP_OFFSET                                                 0XFF5E023C
 #undef CRL_APB_RST_LPD_IOU0_OFFSET 
 #define CRL_APB_RST_LPD_IOU0_OFFSET                                                0XFF5E0230
-#undef SIOU_SATA_MISC_CTRL_OFFSET 
-#define SIOU_SATA_MISC_CTRL_OFFSET                                                 0XFD3D0100
-#undef CRF_APB_RST_FPD_TOP_OFFSET 
-#define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef CRF_APB_RST_FPD_TOP_OFFSET 
 #define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef CRF_APB_RST_FPD_TOP_OFFSET 
@@ -36908,14 +36241,6 @@
 #define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef GPIO_MASK_DATA_1_LSW_OFFSET 
 #define GPIO_MASK_DATA_1_LSW_OFFSET                                                0XFF0A0008
-#undef SATA_AHCI_VENDOR_PP2C_OFFSET 
-#define SATA_AHCI_VENDOR_PP2C_OFFSET                                               0XFD0C00AC
-#undef SATA_AHCI_VENDOR_PP3C_OFFSET 
-#define SATA_AHCI_VENDOR_PP3C_OFFSET                                               0XFD0C00B0
-#undef SATA_AHCI_VENDOR_PP4C_OFFSET 
-#define SATA_AHCI_VENDOR_PP4C_OFFSET                                               0XFD0C00B4
-#undef SATA_AHCI_VENDOR_PP5C_OFFSET 
-#define SATA_AHCI_VENDOR_PP5C_OFFSET                                               0XFD0C00B8
 
 /*
 * USB 0 reset for control registers
@@ -36977,26 +36302,6 @@
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_DEFVAL                 0x0000000F
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_SHIFT                  3
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_MASK                   0x00000008U
-
-/*
-* Sata PM clock control select
-*/
-#undef SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_DEFVAL 
-#undef SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_SHIFT 
-#undef SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_MASK 
-#define SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_DEFVAL             
-#define SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_SHIFT              0
-#define SIOU_SATA_MISC_CTRL_SATA_PM_CLK_SEL_MASK               0x00000003U
-
-/*
-* Sata block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL                  0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT                   1
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_MASK                    0x00000002U
 
 /*
 * PCIE config reset
@@ -38247,17 +37552,6 @@
 /*
 * Status Read value of PLL Lock
 */
-#undef SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_DEFVAL 
-#undef SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_SHIFT 
-#undef SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_MASK 
-#define SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_DEFVAL  0x00000001
-#define SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_SHIFT  4
-#define SERDES_L2_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_MASK  0x00000010U
-#define SERDES_L2_PLL_STATUS_READ_1_OFFSET                                         0XFD40A3E4
-
-/*
-* Status Read value of PLL Lock
-*/
 #undef SERDES_L3_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_DEFVAL 
 #undef SERDES_L3_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_SHIFT 
 #undef SERDES_L3_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_MASK 
@@ -38265,163 +37559,10 @@
 #define SERDES_L3_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_SHIFT  4
 #define SERDES_L3_PLL_STATUS_READ_1_PLL_LOCK_STATUS_READ_MASK  0x00000010U
 #define SERDES_L3_PLL_STATUS_READ_1_OFFSET                                         0XFD40E3E4
-
-/*
-* CIBGMN: COMINIT Burst Gap Minimum.
-*/
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMN_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMN_SHIFT 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMN_MASK 
-#define SATA_AHCI_VENDOR_PP2C_CIBGMN_DEFVAL                    0x28184D1B
-#define SATA_AHCI_VENDOR_PP2C_CIBGMN_SHIFT                     0
-#define SATA_AHCI_VENDOR_PP2C_CIBGMN_MASK                      0x000000FFU
-
-/*
-* CIBGMX: COMINIT Burst Gap Maximum.
-*/
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMX_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMX_SHIFT 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGMX_MASK 
-#define SATA_AHCI_VENDOR_PP2C_CIBGMX_DEFVAL                    0x28184D1B
-#define SATA_AHCI_VENDOR_PP2C_CIBGMX_SHIFT                     8
-#define SATA_AHCI_VENDOR_PP2C_CIBGMX_MASK                      0x0000FF00U
-
-/*
-* CIBGN: COMINIT Burst Gap Nominal.
-*/
-#undef SATA_AHCI_VENDOR_PP2C_CIBGN_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGN_SHIFT 
-#undef SATA_AHCI_VENDOR_PP2C_CIBGN_MASK 
-#define SATA_AHCI_VENDOR_PP2C_CIBGN_DEFVAL                     0x28184D1B
-#define SATA_AHCI_VENDOR_PP2C_CIBGN_SHIFT                      16
-#define SATA_AHCI_VENDOR_PP2C_CIBGN_MASK                       0x00FF0000U
-
-/*
-* CINMP: COMINIT Negate Minimum Period.
-*/
-#undef SATA_AHCI_VENDOR_PP2C_CINMP_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP2C_CINMP_SHIFT 
-#undef SATA_AHCI_VENDOR_PP2C_CINMP_MASK 
-#define SATA_AHCI_VENDOR_PP2C_CINMP_DEFVAL                     0x28184D1B
-#define SATA_AHCI_VENDOR_PP2C_CINMP_SHIFT                      24
-#define SATA_AHCI_VENDOR_PP2C_CINMP_MASK                       0xFF000000U
-
-/*
-* CWBGMN: COMWAKE Burst Gap Minimum.
-*/
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMN_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMN_SHIFT 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMN_MASK 
-#define SATA_AHCI_VENDOR_PP3C_CWBGMN_DEFVAL                    0x0E081906
-#define SATA_AHCI_VENDOR_PP3C_CWBGMN_SHIFT                     0
-#define SATA_AHCI_VENDOR_PP3C_CWBGMN_MASK                      0x000000FFU
-
-/*
-* CWBGMX: COMWAKE Burst Gap Maximum.
-*/
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMX_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMX_SHIFT 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGMX_MASK 
-#define SATA_AHCI_VENDOR_PP3C_CWBGMX_DEFVAL                    0x0E081906
-#define SATA_AHCI_VENDOR_PP3C_CWBGMX_SHIFT                     8
-#define SATA_AHCI_VENDOR_PP3C_CWBGMX_MASK                      0x0000FF00U
-
-/*
-* CWBGN: COMWAKE Burst Gap Nominal.
-*/
-#undef SATA_AHCI_VENDOR_PP3C_CWBGN_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGN_SHIFT 
-#undef SATA_AHCI_VENDOR_PP3C_CWBGN_MASK 
-#define SATA_AHCI_VENDOR_PP3C_CWBGN_DEFVAL                     0x0E081906
-#define SATA_AHCI_VENDOR_PP3C_CWBGN_SHIFT                      16
-#define SATA_AHCI_VENDOR_PP3C_CWBGN_MASK                       0x00FF0000U
-
-/*
-* CWNMP: COMWAKE Negate Minimum Period.
-*/
-#undef SATA_AHCI_VENDOR_PP3C_CWNMP_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP3C_CWNMP_SHIFT 
-#undef SATA_AHCI_VENDOR_PP3C_CWNMP_MASK 
-#define SATA_AHCI_VENDOR_PP3C_CWNMP_DEFVAL                     0x0E081906
-#define SATA_AHCI_VENDOR_PP3C_CWNMP_SHIFT                      24
-#define SATA_AHCI_VENDOR_PP3C_CWNMP_MASK                       0xFF000000U
-
-/*
-* BMX: COM Burst Maximum.
-*/
-#undef SATA_AHCI_VENDOR_PP4C_BMX_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP4C_BMX_SHIFT 
-#undef SATA_AHCI_VENDOR_PP4C_BMX_MASK 
-#define SATA_AHCI_VENDOR_PP4C_BMX_DEFVAL                       0x064A0813
-#define SATA_AHCI_VENDOR_PP4C_BMX_SHIFT                        0
-#define SATA_AHCI_VENDOR_PP4C_BMX_MASK                         0x000000FFU
-
-/*
-* BNM: COM Burst Nominal.
-*/
-#undef SATA_AHCI_VENDOR_PP4C_BNM_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP4C_BNM_SHIFT 
-#undef SATA_AHCI_VENDOR_PP4C_BNM_MASK 
-#define SATA_AHCI_VENDOR_PP4C_BNM_DEFVAL                       0x064A0813
-#define SATA_AHCI_VENDOR_PP4C_BNM_SHIFT                        8
-#define SATA_AHCI_VENDOR_PP4C_BNM_MASK                         0x0000FF00U
-
-/*
-* SFD: Signal Failure Detection, if the signal detection de-asserts for a
-    * time greater than this then the OOB detector will determine this is a li
-    * ne idle and cause the PhyInit state machine to exit the Phy Ready State.
-    *  A value of zero disables the Signal Failure Detector. The value is base
-    * d on the OOB Detector Clock typically (PMCLK Clock Period) * SFD giving
-    * a nominal time of 500ns based on a 150MHz PMCLK.
-*/
-#undef SATA_AHCI_VENDOR_PP4C_SFD_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP4C_SFD_SHIFT 
-#undef SATA_AHCI_VENDOR_PP4C_SFD_MASK 
-#define SATA_AHCI_VENDOR_PP4C_SFD_DEFVAL                       0x064A0813
-#define SATA_AHCI_VENDOR_PP4C_SFD_SHIFT                        16
-#define SATA_AHCI_VENDOR_PP4C_SFD_MASK                         0x00FF0000U
-
-/*
-* PTST: Partial to Slumber timer value, specific delay the controller shou
-    * ld apply while in partial before entering slumber. The value is bases on
-    *  the system clock divided by 128, total delay = (Sys Clock Period) * PTS
-    * T * 128
-*/
-#undef SATA_AHCI_VENDOR_PP4C_PTST_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP4C_PTST_SHIFT 
-#undef SATA_AHCI_VENDOR_PP4C_PTST_MASK 
-#define SATA_AHCI_VENDOR_PP4C_PTST_DEFVAL                      0x064A0813
-#define SATA_AHCI_VENDOR_PP4C_PTST_SHIFT                       24
-#define SATA_AHCI_VENDOR_PP4C_PTST_MASK                        0xFF000000U
-
-/*
-* RIT: Retry Interval Timer. The calculated value divided by two, the lowe
-    * r digit of precision is not needed.
-*/
-#undef SATA_AHCI_VENDOR_PP5C_RIT_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP5C_RIT_SHIFT 
-#undef SATA_AHCI_VENDOR_PP5C_RIT_MASK 
-#define SATA_AHCI_VENDOR_PP5C_RIT_DEFVAL                       0x3FFC96A4
-#define SATA_AHCI_VENDOR_PP5C_RIT_SHIFT                        0
-#define SATA_AHCI_VENDOR_PP5C_RIT_MASK                         0x000FFFFFU
-
-/*
-* RCT: Rate Change Timer, a value based on the 54.2us for which a SATA dev
-    * ice will transmit at a fixed rate ALIGNp after OOB has completed, for a
-    * fast SERDES it is suggested that this value be 54.2us / 4
-*/
-#undef SATA_AHCI_VENDOR_PP5C_RCT_DEFVAL 
-#undef SATA_AHCI_VENDOR_PP5C_RCT_SHIFT 
-#undef SATA_AHCI_VENDOR_PP5C_RCT_MASK 
-#define SATA_AHCI_VENDOR_PP5C_RCT_DEFVAL                       0x3FFC96A4
-#define SATA_AHCI_VENDOR_PP5C_RCT_SHIFT                        20
-#define SATA_AHCI_VENDOR_PP5C_RCT_MASK                         0xFFF00000U
 #undef CRL_APB_RST_LPD_TOP_OFFSET 
 #define CRL_APB_RST_LPD_TOP_OFFSET                                                 0XFF5E023C
 #undef CRL_APB_RST_LPD_IOU0_OFFSET 
 #define CRL_APB_RST_LPD_IOU0_OFFSET                                                0XFF5E0230
-#undef CRF_APB_RST_FPD_TOP_OFFSET 
-#define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef CRF_APB_RST_FPD_TOP_OFFSET 
 #define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef DP_DP_TX_PHY_POWER_DOWN_OFFSET 
@@ -38470,16 +37611,6 @@
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_DEFVAL                 0x0000000F
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_SHIFT                  3
 #define CRL_APB_RST_LPD_IOU0_GEM3_RESET_MASK                   0x00000008U
-
-/*
-* Sata block level reset
-*/
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT 
-#undef CRF_APB_RST_FPD_TOP_SATA_RESET_MASK 
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_DEFVAL                  0x000F9FFE
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_SHIFT                   1
-#define CRF_APB_RST_FPD_TOP_SATA_RESET_MASK                    0x00000002U
 
 /*
 * PCIE config reset
@@ -38581,12 +37712,8 @@
 #define CRF_APB_RST_FPD_TOP_OFFSET                                                 0XFD1A0100
 #undef CRL_APB_RST_LPD_TOP_OFFSET 
 #define CRL_APB_RST_LPD_TOP_OFFSET                                                 0XFF5E023C
-#undef FPD_SLCR_AFI_FS_OFFSET 
-#define FPD_SLCR_AFI_FS_OFFSET                                                     0XFD615000
-#undef AFIFM0_AFIFM_RDCTRL_OFFSET 
-#define AFIFM0_AFIFM_RDCTRL_OFFSET                                                 0XFD360000
-#undef AFIFM0_AFIFM_WRCTRL_OFFSET 
-#define AFIFM0_AFIFM_WRCTRL_OFFSET                                                 0XFD360014
+#undef LPD_SLCR_AFI_FS_OFFSET 
+#define LPD_SLCR_AFI_FS_OFFSET                                                     0XFF419000
 
 /*
 * AF_FM0 block level reset
@@ -38663,34 +37790,12 @@
     *  AXI data width (default) 01: 64-bit AXI data width 10: 128-bit AXI data
     *  width 11: reserved
 */
-#undef FPD_SLCR_AFI_FS_DW_SS0_SEL_DEFVAL 
-#undef FPD_SLCR_AFI_FS_DW_SS0_SEL_SHIFT 
-#undef FPD_SLCR_AFI_FS_DW_SS0_SEL_MASK 
-#define FPD_SLCR_AFI_FS_DW_SS0_SEL_DEFVAL                      0x00000A00
-#define FPD_SLCR_AFI_FS_DW_SS0_SEL_SHIFT                       8
-#define FPD_SLCR_AFI_FS_DW_SS0_SEL_MASK                        0x00000300U
-
-/*
-* Configures the Read Channel Fabric interface width. 2'b11 : Reserved 2'b
-    * 10 : 32-bit Fabric 2'b01 : 64-bit enabled 2'b00 : 128-bit enabled
-*/
-#undef AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_DEFVAL 
-#undef AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_SHIFT 
-#undef AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_MASK 
-#define AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_DEFVAL                0x000003B0
-#define AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_SHIFT                 0
-#define AFIFM0_AFIFM_RDCTRL_FABRIC_WIDTH_MASK                  0x00000003U
-
-/*
-* Configures the Write Channel Fabric interface width. 2'b11 : Reserved 2'
-    * b10 : 32-bit Fabric 2'b01 : 64-bit enabled 2'b00 : 128-bit enabled
-*/
-#undef AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_DEFVAL 
-#undef AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_SHIFT 
-#undef AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_MASK 
-#define AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_DEFVAL                0x000003B0
-#define AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_SHIFT                 0
-#define AFIFM0_AFIFM_WRCTRL_FABRIC_WIDTH_MASK                  0x00000003U
+#undef LPD_SLCR_AFI_FS_DW_SS2_SEL_DEFVAL 
+#undef LPD_SLCR_AFI_FS_DW_SS2_SEL_SHIFT 
+#undef LPD_SLCR_AFI_FS_DW_SS2_SEL_MASK 
+#define LPD_SLCR_AFI_FS_DW_SS2_SEL_DEFVAL                      0x00000200
+#define LPD_SLCR_AFI_FS_DW_SS2_SEL_SHIFT                       8
+#define LPD_SLCR_AFI_FS_DW_SS2_SEL_MASK                        0x00000300U
 #undef GPIO_MASK_DATA_5_MSW_OFFSET 
 #define GPIO_MASK_DATA_5_MSW_OFFSET                                                0XFF0A002C
 #undef GPIO_DIRM_5_OFFSET 
@@ -38767,16 +37872,16 @@
 extern "C" {
 #endif
  int psu_init (); 
- unsigned long psu_ps_pl_isolation_removal_data(void); 
- unsigned long psu_ps_pl_reset_config_data(void); 
- int psu_protection(void); 
- int psu_fpd_protection(void); 
- int psu_ocm_protection(void); 
- int psu_ddr_protection(void); 
- int psu_lpd_protection(void); 
- int psu_protection_lock(void); 
+ unsigned long psu_ps_pl_isolation_removal_data(); 
+ unsigned long psu_ps_pl_reset_config_data(); 
+ int psu_protection(); 
+ int psu_fpd_protection(); 
+ int psu_ocm_protection(); 
+ int psu_ddr_protection(); 
+ int psu_lpd_protection(); 
+ int psu_protection_lock(); 
  unsigned long psu_ddr_qos_init_data(void); 
- unsigned long psu_apply_master_tz(void); 
+ unsigned long psu_apply_master_tz(); 
 #ifdef __cplusplus
 }
 #endif

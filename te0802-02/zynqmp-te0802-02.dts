@@ -59,6 +59,30 @@
 	     /delete-node/ cpu@2;
 	     /delete-node/ cpu@3;
 	};
+
+	pmu {
+		interrupts = <0 143 4>,
+			     <0 144 4>;
+		interrupt-affinity = <&cpu0>,
+				     <&cpu1>;
+	};
+
+	thermal-zones {
+		apu-thermal {
+			cooling-maps {
+				map {
+					cooling-device =
+						<&cpu0 (~0) (~0)>,
+						<&cpu1 (~0) (~0)>;
+				};
+			};
+		};
+	};
+
+	axi {
+		/delete-node/ debug@fee10000;
+		/delete-node/ debug@fef10000;
+	};
 };
 
 &fpd_dma_chan1 {
