@@ -143,3 +143,36 @@ Using `flashcp` from `mtd-utils`.
 flashcp /boot/boot.bin /dev/mtd0
 flashcp /boot/u-boot.itb /dev/mtd2
 ```
+
+### Read eFuse
+
+#### Build PMUFW with `EFUSE_ACCESS` enabled
+
+```diff
+Index: embeddedsw/lib/sw_apps/zynqmp_pmufw/src/xpfw_config.h
+===================================================================
+--- embeddedsw.orig/lib/sw_apps/zynqmp_pmufw/src/xpfw_config.h
++++ embeddedsw/lib/sw_apps/zynqmp_pmufw/src/xpfw_config.h
+@@ -208,11 +208,11 @@ extern "C" {
+ #endif
+
+ #ifndef ENABLE_SECURE_VAL
+-#define        ENABLE_SECURE_VAL                                       (1U)
++#define        ENABLE_SECURE_VAL                                       (0U)
+ #endif
+
+ #ifndef ENABLE_EFUSE_ACCESS
+-#define ENABLE_EFUSE_ACCESS                                    (0U)
++#define ENABLE_EFUSE_ACCESS                                    (1U)
+ #endif
+
+ #ifndef XPU_INTR_DEBUG_PRINT_ENABLE_VAL
+```
+
+#### Device DNA
+
+```shell
+$ dd if=/sys/bus/nvmem/devices/zynqmp-nvmem0/nvmem of=/tmp/device_dna.bin bs=12 count=1 skip=1
+$ xxd /tmp/device_dna.bin
+00000000: 4507 a204 c478 5101 0000 0040            E....xQ....@
+```
