@@ -1,10 +1,14 @@
 # Bootloader
 
+Build boot loader for ZynqMP.
+
 ## Quick Start
 
+```shell
+make board=myir-fz3
 ```
-$ make
-```
+
+`board` can be either `myir-fz3` or `te0802-02`.
 
 ## U-Boot
 

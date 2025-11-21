@@ -2,16 +2,18 @@
 
 ## Quick Start
 
-Build mainline kernel and kernel modules for TE0802.
+Build mainline kernel and kernel modules for ZynqMP.
 
 ```shell
-make
+make board=myir-fz3
 ```
+
+`board` can be either `myir-fz3` or `te0802-02`.
 
 Install kernel modules into rootfs.
 
 ```shell
-sudo make install_modules
+sudo make board=myir-fz3 install_modules
 ```
 
 ## Building Linux kernel
