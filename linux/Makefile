@@ -15,7 +15,7 @@ mainline_linux_archive=$(mainline_linux_dir).tar.xz
 mainline_linux_url=https://cdn.kernel.org/pub/linux/kernel/v6.x/$(mainline_linux_archive)
 mainline_linux_unpacked=$(mainline_linux_dir)/Makefile
 mainline_linux_patches_dir=$(mainline_linux_dir)/patches
-mainline_linux_configured=$(mainline_linux_dir)/.configured
+mainline_linux_config=$(mainline_linux_dir)/.config
 mainline_linux_built=$(mainline_linux_dir)/.built
 
 mainline_boot_dir=$(mainline_linux_dir)/arch/arm64/boot
@@ -31,10 +31,13 @@ dtbocfg_unpacked=$(dtbocfg_dir)/Makefile
 dtbocfg_built=$(dtbocfg_dir)/.built
 dtbocfg_installed=$(dtbocfg_dir)/.installed
 
+mainline_linux_image=Image.lzma
 mainline_linux_output_dir=$(output_dir)/$(mainline_linux_dir)
 mainline_linux_modules_dir=$(mainline_linux_output_dir)/modules
 mainline_linux_output_image=$(mainline_linux_output_dir)/Image
-mainline_linux_output_modules=$(mainline_linux_modules_dir)/lib/modules/$(mainline_linux_version)//modules.builtin
+mainline_linux_output_modules_dir=$(mainline_linux_modules_dir)/lib/modules/$(mainline_linux_version)
+mainline_linux_output_modules=$(mainline_linux_output_modules_dir)/modules.builtin
+mainline_linux_output_modules_archive=$(mainline_linux_modules_dir)/$(mainline_linux_version).tar.xz
 mainline_linux_binary_device_tree=$(mainline_device_tree_dir)/$(device_tree_binary)
 mainline_linux_headers_dir=$(mainline_linux_output_dir)/headers
 mainline_linux_headers_installed=$(mainline_linux_headers_dir)/.installed
@@ -70,14 +73,15 @@ $(mainline_linux_headers_dir):
 	mkdir -p $@
 	touch $@
 
-$(mainline_linux_configured): $(mainline_dts_destination) $(aarch64_linux_marker)
+$(mainline_linux_config): $(mainline_dts_destination) $(aarch64_linux_marker)
 	cp $(board_dir_linux)/$(mainline_linux_version)/$(kernel_configuration_name) $(mainline_linux_dir)/arch/arm64/configs/
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) $(kernel_configuration_name) ARCH=arm64
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) oldconfig ARCH=arm64
 	touch $@
 
-$(mainline_linux_built): $(mainline_linux_configured) $(aarch64_linux_marker)
+$(mainline_linux_built): $(mainline_linux_config) $(aarch64_linux_marker)
 	DTC_FLAGS="-@" CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64
+	DTC_FLAGS="-@" CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64 $(mainline_linux_image)
 	DTC_FLAGS="-@" CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) modules ARCH=arm64
 	touch $@
 
@@ -93,7 +97,7 @@ $(dtbocfg_built): $(dtbocfg_unpacked) $(mainline_linux_built)
 	touch $@
 
 $(mainline_linux_output_image): $(mainline_linux_built) $(mainline_linux_output_dir)
-	cp $(mainline_boot_dir)/Image.gz $(mainline_linux_output_image)
+	cp $(mainline_boot_dir)/$(mainline_linux_image) $(mainline_linux_output_image)
 
 $(mainline_linux_binary_device_tree): $(mainline_linux_built) $(mainline_linux_output_dir)
 	cp $(mainline_linux_binary_device_tree) $(mainline_linux_output_dir)
@@ -101,14 +105,18 @@ $(mainline_linux_binary_device_tree): $(mainline_linux_built) $(mainline_linux_o
 $(mainline_linux_output_modules): $(mainline_linux_built) $(mainline_linux_modules_dir)
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) modules_install ARCH=arm64 INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
 
+$(mainline_linux_output_modules_archive): $(mainline_linux_output_modules)
+	tar -I xz -cf $@ -C $(mainline_linux_output_modules_dir) .
+
 $(mainline_linux_headers_installed): $(mainline_linux_built) $(mainline_linux_headers_dir)
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -C $(mainline_linux_dir) headers_install ARCH=arm64 INSTALL_HDR_PATH=$(abspath $(mainline_linux_headers_dir))
 	touch $@
 
 $(dtbocfg_installed): $(mainline_linux_output_modules) $(dtbocfg_built) $(mainline_linux_modules_dir)
 	cd $(dtbocfg_dir) && CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) modules_install ARCH=arm64 KERNEL_SRC=$(abspath $(mainline_linux_dir)) INSTALL_MOD_PATH=$(abspath $(mainline_linux_modules_dir))
+	touch $@
 
-mainline: $(mainline_linux_output_image) $(mainline_linux_binary_device_tree) $(mainline_linux_output_modules) $(dtbocfg_installed) $(mainline_linux_headers_installed)
+mainline: $(mainline_linux_output_image) $(mainline_linux_binary_device_tree) $(mainline_linux_output_modules) $(mainline_linux_output_modules_archive) $(dtbocfg_installed) $(mainline_linux_headers_installed)
 
 config:
 	CROSS_COMPILE=$(CROSS_COMPILE) $(MAKE) -j$(num_jobs) -C $(mainline_linux_dir) ARCH=arm64 menuconfig
