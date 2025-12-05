@@ -132,6 +132,10 @@ $(u_boot_image_output): $(u_boot_built) $(output_dir)
 config: 
 	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) menuconfig
 
+saveconfig:
+	$(Q)CROSS_COMPILE=$(aarch64_linux_cross) ARCH=aarch64 $(MAKE) -C $(u_boot_dir) savedefconfig
+	cp $(u_boot_dir)/defconfig $(u_boot_defconfig_src)
+
 clean:
 	$(Q)rm -f $(pmu_obj) $(pmu_obj_obj) $(pmu_obj) $(atf_bin)
 	$(Q)rm -rf $(atf_dir) $(embeddedsw_dir) $(u_boot_dir)

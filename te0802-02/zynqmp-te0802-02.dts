@@ -16,7 +16,7 @@
 
 / {
 	model = "ZynqMP TE0802-02";
-	compatible = "xlnx,zynqmp-te0802-02", "xlnx,zynqmp-te0802", "xlnx,zynqmp";
+	compatible = "xlnx,zynqmp-te0802-02", "xlnx,zynqmp";
 
 	aliases {
 		ethernet0 = &gem3;
@@ -27,7 +27,7 @@
 	};
 
 	chosen {
-		bootargs = "earlycon clk_ignore_unused";
+		bootargs = "earlycon clk_ignore_unused console=ttyPS0,115200";
 		stdout-path = "serial0:115200n8";
 		xlnx,eeprom = &eeprom;
 	};
@@ -36,6 +36,18 @@
 		device_type = "memory";
 		reg = <0x0 0x0 0x0 0x3ff00000>;
 	};
+
+   refclk0:psgtr_pcie_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <100000000>;
+   };
+
+	refclk1:psgtr_usb_clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0x00>;
+		clock-frequency = <26000000>;
+   };
 	
 	refclk2:psgtr_dp_clock {
 		compatible = "fixed-clock";
@@ -43,17 +55,17 @@
 		clock-frequency = <27000000>;
 	};
 
-	refclk1:psgtr_usb_clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0x00>;
-		clock-frequency = <26000000>;
-   };
+	dpcon {
+		compatible = "dp-connector";
+		label = "P11";
+		type = "full-size";
 
-   refclk0:psgtr_pcie_clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0x00>;
-		clock-frequency = <100000000>;
-   };
+		port {
+			dpcon_in: endpoint {
+				remote-endpoint = <&dpsub_dp_out>;
+			};
+		};
+	};
 
 	cpus {
 	     /delete-node/ cpu@2;
@@ -122,6 +134,8 @@
 	phy-mode = "rgmii-id";
 	nvmem-cells = <&eth0_addr>;
 	nvmem-cell-names = "mac-address";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gem3_default>;
 };
 
 &gpio {
@@ -134,19 +148,23 @@
 
 &i2c0 {
 	status = "okay";
-	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c0_default>;
 };
 
 &i2c1 {
 	status = "okay";
-	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c1_default>;
 
 	eeprom: eeprom@50 {
-		compatible = "microchip,24aa025", "atmel,24c02";
-		reg = <0x50>;
-
 		#address-cells = <1>;
 		#size-cells = <1>;
+		
+		compatible = "microchip,24aa025", "atmel,24c02";
+		reg = <0x50>;
+		pagesize = <16>;
+		address-width = <8>;
 		eth0_addr: eth-mac-addr@FA {
 			reg = <0xFA 0x06>;
 		};
@@ -166,26 +184,16 @@
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
 		};
-
-		conf-rx {
-			pins = "MIO11";
-			bias-high-impedance;
-		};
-
-		conf-tx {
-			pins = "MIO10";
-			bias-disable;
-		};
 	};
 
 	pinctrl_sdhci0_default: sdhci0-default {
 		mux {
-			groups = "sdio0_0_grp";
+			groups = "sdio0_3_grp";
 			function = "sdio0";
 		};
 
 		conf {
-			groups = "sdio0_0_grp";
+			groups = "sdio0_3_grp";
 			slew-rate = <SLEW_RATE_SLOW>;
 			power-source = <IO_STANDARD_LVCMOS18>;
 			bias-disable;
@@ -204,11 +212,65 @@
 			power-source = <IO_STANDARD_LVCMOS18>;
 		};
 	};
+
+	pinctrl_i2c0_default: i2c0-default {
+		mux {
+			groups = "i2c0_4_grp";
+			function = "i2c0";
+		};
+	};
+
+	pinctrl_i2c1_default: i2c1-default {
+		mux {
+			groups = "i2c1_2_grp";
+			function = "i2c1";
+		};
+	};
+
+	pinctrl_qspi_default: qspi-default {
+		mux {
+			function = "qspi0";
+			groups = "qspi0_1_grp";
+		};
+
+		mux-ss {
+			function = "qspi_ss";
+			groups = "qspi_ss_1_grp";
+		};
+	};
+
+	pinctrl_usb0_default: usb0-default {
+		mux {
+			function = "usb0";
+			groups = "usb0_0_grp";
+		};
+	};
+
+	pinctrl_gem3_default: gem3-default {
+		mux {
+			function = "ethernet3";
+			groups = "ethernet3_0_grp";
+		};
+
+		mux-mdio {
+			function = "mdio3";
+			groups = "mdio3_0_grp";
+		};
+	};
+
+	pinctrl_pcie_default: pcie-default {
+		mux {
+			function = "pcie0";
+			groups = "pcie0_2_grp";
+		};
+	};
 };
 
 &pcie {
 	status = "okay";
 	xlnx,tz-nonsecure = <0x00>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pcie_default>;
 };
 
 &psgtr {
@@ -220,37 +282,43 @@
 &qspi {
 	status = "okay";
 	is-dual = <0>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_qspi_default>;
+
 	flash@0 {
-		compatible = "jedec,spi-nor";
-		spi-tx-bus-width = <4>;
-		spi-rx-bus-width = <1>;
-		spi-max-frequency = <50000000>;
+		compatible = "micron,mt25ql256a", "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0x0>;
-		partition@0 {
+
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <90000000>;
+		// QSPI flash, 32Mb
+		partition@fsbl { 
+			// first stage boot loader, u-boot-spl, 1Mb
 			label = "fsbl";
-			reg = <0x00 0x0080000>;
+			reg = <0x0000000 0x0100000>;
 		};
-		partition@1 {
+		partition@ssbl_config { 
+			// second stage boot loader configuration, 1Mb
+			label = "ssbl_config";
+			reg = <0x0100000 0x0100000>;
+		};
+		partition@ssbl { 
+			// second stage boot loader, u-boot, 4Mb
 			label = "ssbl";
-			reg = <0x0080000 0x0600000>;
+			reg = <0x0200000 0x0400000>;
 		};
-		partition@2 {
-			label = "device-tree";
-			reg = <0x0680000 0x40000>;
+		partition@linux { 
+			// Linux kernel, 10Mb
+			label = "linux";
+			reg = <0x0600000 0x0a00000>;
 		};
-		partition@3 {
-			label = "kernel";
-			reg = <0x06c0000 0x1000000>;
-		};
-		partition@4 {
-			label = "bootscr";
-			reg = <0x16c0000 0x40000>;
-		};
-		partition@5 {
-			label = "bootenv";
-			reg = <0x1700000 0x40000>;
+		// Data, 16Mb
+		partition@data { 
+			label = "data";
+			reg = <0x1000000 0x1000000>;
 		};
 	};
 };
@@ -301,6 +369,8 @@
 	xlnx,tz-nonsecure = <0x01>;
 	xlnx,usb-polarity = <0x00>;
 	xlnx,usb-reset-mode = <0x00>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usb0_default>;
 };
 
 &dwc3_0 {
@@ -335,4 +405,16 @@
 	phy-names = "dp-phy0", "dp-phy1";
 	phys = <&psgtr 3 PHY_TYPE_DP 0 2>,
 	       <&psgtr 2 PHY_TYPE_DP 1 2>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		
+		port@5 {
+			reg = <5>;
+			dpsub_dp_out: endpoint {
+				remote-endpoint = <&dpcon_in>;
+			};
+		};
+	};
 };
