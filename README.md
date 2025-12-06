@@ -6,7 +6,7 @@ Booting Xilinx ZynqMP with as few Xilinx tools possible.
 
 Tested with following boards,
 
- - [Trenz-Electronic TE0802-02](./te0802-02/README.md), currently out of date
+ - [Trenz-Electronic TE0802-02](./te0802-02/README.md)
  - [Myir FZ3](./myir-fz3/README.md)
 
 ## Required packages,

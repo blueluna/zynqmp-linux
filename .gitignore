@@ -6,3 +6,5 @@ rootfs/
 *.log
 .linked
 *.dtbo
+*.dtb
+*.scr

@@ -39,11 +39,11 @@ output_dir=$(board_dir)/output
 xilinx_version=v2025.1
 xilinx_tag=xilinx-$(xilinx_version)
 
-arm_gcc_prefix=gcc-arm-
-arm_gcc_version=11.2-2022.02
+#arm_gcc_prefix=gcc-arm-
+#arm_gcc_version=11.2-2022.02
 
-#arm_gcc_prefix=arm-gnu-toolchain-
-#arm_gcc_version=14.3.rel1
+arm_gcc_prefix=arm-gnu-toolchain-
+arm_gcc_version=14.3.rel1
 
 aarch64_none_triplet=aarch64-none-elf
 aarch64_none_dir=$(arm_gcc_prefix)$(arm_gcc_version)-x86_64-$(aarch64_none_triplet)

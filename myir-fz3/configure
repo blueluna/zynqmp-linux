@@ -2,13 +2,16 @@
 
 set -eu
 
-if [ $# -ne 1 ]; then
-        echo "${0} <dtbo file path>"
+if [ $# -ne 2 ]; then
+        echo "${0} <dtbo file path> <bin file path>"
         exit 1
 fi
 
+dtbo_path="${1}"
+
 firmware_dir=/lib/firmware
-firmware_name=top_wrapper.bin
+firmware_path="${2}"
+firmware_name=$(basename ${firmware_path})
 firmware_path=${firmware_dir}/${firmware_name}
 
 if [ ! -d ${firmware_dir} ]; then
@@ -50,7 +53,7 @@ if [ -d ${dtbocfg_pl} ]; then
 fi
 
 mkdir -p ${dtbocfg_pl}
-cat ${1} > ${dtbocfg_pl_dtbo}
+cat ${dtbo_path} > ${dtbocfg_pl_dtbo}
 echo "1" > ${dtbocfg_pl_status}
 
 exit 0

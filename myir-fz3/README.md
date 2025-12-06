@@ -7,12 +7,13 @@ Currently supported,
  - [x] PMUFW
  - [x] PSU init
  - [x] U-Boot SPL
- - [x] U-Boot 
+ - [x] U-Boot
  - [x] Linux Kernel
  - [x] Debian
  - [x] SD-card
  - [x] Ethernet
  - [x] eMMC
+ - [x] I^2^C EEPROM
  - [x] QSPI flash
  - [x] DisplayPort Video
  - [x] DisplayPort Audio

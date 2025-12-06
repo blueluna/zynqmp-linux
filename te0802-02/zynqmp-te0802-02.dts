@@ -160,7 +160,7 @@
 	eeprom: eeprom@50 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		
+
 		compatible = "microchip,24aa025", "atmel,24c02";
 		reg = <0x50>;
 		pagesize = <16>;
@@ -295,30 +295,40 @@
 		spi-rx-bus-width = <4>;
 		spi-max-frequency = <90000000>;
 		// QSPI flash, 32Mb
-		partition@fsbl { 
+		partition@fsbl {
 			// first stage boot loader, u-boot-spl, 1Mb
 			label = "fsbl";
 			reg = <0x0000000 0x0100000>;
 		};
-		partition@ssbl_config { 
+		partition@ssbl_config {
 			// second stage boot loader configuration, 1Mb
 			label = "ssbl_config";
 			reg = <0x0100000 0x0100000>;
 		};
-		partition@ssbl { 
+		partition@ssbl {
 			// second stage boot loader, u-boot, 4Mb
 			label = "ssbl";
 			reg = <0x0200000 0x0400000>;
 		};
-		partition@linux { 
+		partition@ssbl_script {
+			// second stage boot loader script, 1Mb
+			label = "ssbl_script";
+			reg = <0x0600000 0x0100000>;
+		};
+		partition@device_tree {
+			// device tree blob, 1Mb
+			label = "device_tree";
+			reg = <0x0700000 0x0100000>;
+		};
+		partition@linux {
 			// Linux kernel, 10Mb
 			label = "linux";
-			reg = <0x0600000 0x0a00000>;
+			reg = <0x0800000 0x0a00000>;
 		};
-		// Data, 16Mb
-		partition@data { 
+		// Data, 14Mb
+		partition@data {
 			label = "data";
-			reg = <0x1000000 0x1000000>;
+			reg = <0x1200000 0x0e00000>;
 		};
 	};
 };
