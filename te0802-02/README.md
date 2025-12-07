@@ -13,7 +13,7 @@ Currently supported,
  - [x] SD-card
  - [x] Ethernet
  - [x] NVMe
- - [x] I^2^C EEPROM
+ - [x] I²C EEPROM
  - [x] QSPI flash
  - [ ] DisplayPort Video
  - [ ] DisplayPort Audio

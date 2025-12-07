@@ -10,3 +10,5 @@ pm_cfg_obj.o
 pmu_obj.bin
 gcc-arm-*-x86_64-aarch64-none-elf/
 gcc-arm-*-x86_64-aarch64-none-elf.tar.xz
+optee_os-*/
+optee_os-*.tar.gz
